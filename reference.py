@@ -1,18 +1,19 @@
 """Arc-length reference and MPCC online-data construction."""
 import numpy as np
-from scipy.interpolate import CubicHermiteSpline
+from scipy.interpolate import CubicHermiteSpline,CubicSpline
+import os
 
 def reference_from_plan(plan,initial):
     x=plan['reference_states'];ds=np.linalg.norm(np.diff(x[:,:3],axis=0),axis=1)
     raw=np.r_[0,np.cumsum(ds)];keep=np.r_[True,ds>1e-8];raw=raw[keep];p=x[keep,:3]
     first_gate_s=float(np.interp(plan['durations'][0],plan['reference_time'],np.r_[0,np.cumsum(ds)]))
-    required=np.array([0.,first_gate_s,raw[-1]])
+    required=np.unique(np.r_[0.,np.interp(np.cumsum(plan['durations']),plan['reference_time'],np.r_[0,np.cumsum(ds)]),raw[-1]])
     grid=np.arange(0.,raw[-1],.15)
     grid=grid[np.min(abs(grid[:,None]-required[None,:]),axis=1)>.025]
     grid=np.sort(np.r_[grid,required]);positions=np.array([np.interp(grid,raw,p[:,j]) for j in range(3)]).T
     tangent=np.gradient(positions,grid,axis=0);tangent/=np.linalg.norm(tangent,axis=1)[:,None]
     if np.linalg.norm(initial[3:6])>.01:tangent[0]=initial[3:6]/np.linalg.norm(initial[3:6])
-    spline=CubicHermiteSpline(grid,positions,tangent,axis=0)
+    spline=(CubicSpline(grid,positions,axis=0) if os.environ.get('PREVIEW_SPLINE','hermite')=='c2' else CubicHermiteSpline(grid,positions,tangent,axis=0))
     # Analytic continuation evaluates the terminal spline polynomial; it adds
     # no waypoint event and imposes no endpoint position constraint on CPC.
     return dict(arc=grid,position=positions,spline=spline,initial=np.array(initial),length=raw[-1],first_gate_s=first_gate_s,

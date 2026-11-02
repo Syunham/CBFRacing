@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "samples": 30,
+  "maximum_difference": 6.363276572329823e-10,
+  "drag_power_range": [
+    -172.09995797177788,
+    -9.326841971756178
+  ]
+}

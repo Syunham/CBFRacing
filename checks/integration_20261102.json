@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "run": "outputs\\integrated_drag_preview5_mu220_20261102",
+  "full_flight_comparison": {
+    "time_difference": 0.0,
+    "state_difference": 0.0,
+    "fresh_execution": true
+  },
+  "unit_tests_passed": 5,
+  "selfcheck": {
+    "local_module_sources": {
+      "context": "context.py",
+      "model": "model.py",
+      "allocation": "allocation.py",
+      "train": "train.py",
+      "planning": "planning.py",
+      "controller": "controller.py",
+      "reference": "reference.py",
+      "phase_planner": "phase_planner.py",
+      "original_cpc": "original_cpc.py",
+      "timing": "timing.py",
+      "seed": "seed.py",
+      "warm_seed": "warm_seed.py",
+      "cli_profiles": "cli_profiles.py",
+      "barrier": "barrier.py",
+      "safety_train": "safety_train.py",
+      "audit_neural": "audit_neural.py"
+    },
+    "checkpoint_hashes_match": true,
+    "antisymmetry_error": 0.0,
+    "maximum_local_gradient_error": 4.3462920151782214e-08,
+    "gradient_entries": 8,
+    "scope": "Local derivative entries and runtime relocation check"
+  },
+  "model_consistency": {
+    "passed": true,
+    "samples": 30,
+    "maximum_difference": 6.363276572329823e-10,
+    "drag_power_range": [
+      -172.09995797177788,
+      -9.326841971756178
+    ]
+  },
+  "original_two_event_encoding": {
+    "passed": true,
+    "parameterization": "Two-gate original CPC",
+    "physical_parameters": "Both expressions use updated drag and vehicle parameters",
+    "maximum_expression_difference": 0.0,
+    "samples": 3,
+    "scope": "Objective, constraints and bounds regression; no original-CPC full-flight feasibility claim."
+  },
+  "historical_replay": true,
+  "scope": "New complete execution with local project modules; dense numerical checks, no real-time latency or formal invariant-set claim."
+}

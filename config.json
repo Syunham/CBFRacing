@@ -5,7 +5,7 @@
   "integration_substeps": 4,
   "audit_substeps": 16,
   "speed_limit": null,
-  "body_rate_limit": 9.4,
+  "body_rate_limit": 10.0,
   "height_bounds": [
     0.05,
     6.0
@@ -37,6 +37,22 @@
     "torque_coefficient": 0.022,
     "gravity": 9.81,
     "thrust_min": 0.0,
-    "thrust_max": 7.0
+    "thrust_max": 7.0,
+    "linear_drag_kg_s": [0.26, 0.28, 0.42]
+  },
+  "online_planning": {
+    "cbf_branch": "learned",
+    "frontend": "phase",
+    "preview_gates": 5,
+    "preview_spline": "c2",
+    "reference_refine": 2,
+    "physical_gate_guard": true,
+    "progress": 220.0,
+    "horizon": 20,
+    "lag_weight": 10000.0,
+    "gate_weight": 10000.0,
+    "contour_weight": 10.0,
+    "thrust_rate_weight": 0.05,
+    "progress_acceleration_weight": 2.0
   }
 }

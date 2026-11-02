@@ -1,0 +1,10 @@
+test_both_safety_branches_keep_their_constraint_meaning (test_cli_branches.RacingIntegration.test_both_safety_branches_keep_their_constraint_meaning) ... ok
+test_defaults_and_explicit_branch_overrides (test_cli_branches.RacingIntegration.test_defaults_and_explicit_branch_overrides) ... ok
+test_gate_preview_wrap_and_phase_mesh_sizes (test_cli_branches.RacingIntegration.test_gate_preview_wrap_and_phase_mesh_sizes) ... ok
+test_physical_units_and_dissipation (test_cli_branches.RacingIntegration.test_physical_units_and_dissipation) ... ok
+test_saved_model_replay_can_use_zero_drag_without_changing_live_model (test_cli_branches.RacingIntegration.test_saved_model_replay_can_use_zero_drag_without_changing_live_model) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 6.620s
+
+OK

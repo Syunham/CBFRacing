@@ -10,6 +10,7 @@ class RecoveryMPCC:
         self.n=n;self.X=None;self.U=None;self.state=None;self.od=None
         self.restarts=restarts;self.barrier=barrier
         self.cbf_mode=cbf_mode;self.cbf_alpha=cbf_alpha;self.neural=None;self.h_rows=[];self.dh_rows=[]
+        self.physical_gate_guard=os.environ.get('PHYSICAL_GATE_GUARD','0')=='1';self.guard_gate=None;self.guard_armed=False
         if cbf_checkpoint:
             from barrier import load,symbolic
             self.neural=symbolic(load(cbf_checkpoint)[0])
@@ -19,6 +20,14 @@ class RecoveryMPCC:
         OD=ca.MX.sym('OD',70,n+1);W=ca.MX.sym('W',13);mu=ca.MX.sym('mu')
         rhs,step=model_functions(2);expr=[];lb=[];ub=[];objective=0.
         def add(v,lo=0.,hi=0.):expr.append(ca.vec(v));lb.extend([lo]*v.numel());ub.extend([hi]*v.numel())
+        def gate_crossing(before,after,od):
+            a=before[:3]-od[34:37];b=after[:3]-od[34:37];normal=od[37:40]
+            pa=ca.dot(a,normal);pb=ca.dot(b,normal)
+            cross=(pb*a-pa*b)/ca.fmax(pb-pa,1e-6)
+            lateral=-cross[0]*normal[1]+cross[1]*normal[0]
+            active=ca.logic_and(pa<0.,pb>=0.)
+            add(ca.if_else(active,lateral**2-od[50]**2,-1.),-np.inf,0.)
+            add(ca.if_else(active,cross[2]**2-od[51]**2,-1.),-np.inf,0.)
         add(X[:,0]-initial)
         previous_h=None
         for k in range(n+1):
@@ -33,7 +42,8 @@ class RecoveryMPCC:
                 add(X[:,k+1]-step(x,u,DT))
                 if k==0 and execution_guard:
                     executed=step(x,u,FEEDBACK)
-                    add(ca.sumsqr(executed[10:13]),0.,9.3**2)
+                    if self.physical_gate_guard:gate_crossing(x,executed,od)
+                    add(ca.sumsqr(executed[10:13]),0.,(MODEL['omega_max']-.1)**2)
                     add(executed[13:17],.00001,6.99999)
                     add(executed[2],.05001,np.inf)
                     if dense_physics:
@@ -43,15 +53,17 @@ class RecoveryMPCC:
                         world=course()['world_box']
                         for fraction in (.25,.5,.75,1.):
                             interim=step(x,u,FEEDBACK*fraction)
-                            add(ca.sumsqr(interim[10:13]),0.,9.39**2)
+                            add(ca.sumsqr(interim[10:13]),0.,(MODEL['omega_max']-.01)**2)
                             for dim in range(3):add(interim[dim],world[dim]+1e-5,world[dim+3]-1e-5)
-            add(ca.sumsqr(x[10:13]),0.,9.4**2);add(x[13:17],0.,7.0);add(x[2],.05,np.inf);add(x[18],0.,30.)
+            add(ca.sumsqr(x[10:13]),0.,MODEL['omega_max']**2);add(x[13:17],0.,7.0);add(x[2],.05,np.inf);add(x[18],0.,30.)
             add(x[17]-od[33],-np.inf,0.)
             world=course()['world_box']
             for dim in range(3):add(x[dim],world[dim],world[dim+3])
             gr=x[:3]-od[34:37];plane=ca.dot(gr,od[37:40]);lateral=-gr[0]*od[38]+gr[1]*od[37]
             width=od[40]+od[41]*ca.sqrt(plane**2+1e-6)+od[43]*ca.sqrt((x[17]-od[42])**2+1e-6)
             width_lat=width; width_up=width
+            if self.physical_gate_guard and k>0:
+                gate_crossing(X[:,k-1],x,od)
             if gate_guard:
                 # A local progress window caps the physical opening. Release
                 # both well before and after the event: the upper/lower Split-S
@@ -108,6 +120,12 @@ class RecoveryMPCC:
         self.od=np.c_[np.array(od),np.tile(context,(len(od),1)),np.zeros((len(od),20))]
         lat=np.cross([0.,0.,1.],normals[gi]);delta=np.asarray(od)[0,34:37]-centers[gi]
         self.od[:,50]=.70-abs(delta@lat);self.od[:,51]=.70-abs(delta[2])
+        if self.physical_gate_guard:
+            if self.guard_gate!=gi:self.guard_gate=gi;self.guard_armed=False
+            relative=self.state[:3]-self.od[0,34:37];plane=float(relative@normals[gi])
+            if plane<-.1 and abs(relative@lat)<=self.od[0,50]+2*abs(plane)-.02 and abs(relative[2])<=self.od[0,51]+2*abs(plane)-.02:
+                self.guard_armed=True
+            self.od[:,52]=float(self.guard_armed)
 
     def weights(self,mu=500.,q_l=10000.,df=.05,at=2.,slack=1e6):
         self.mu=mu;self.w=np.array([1,1,1,q_l,1,1,10,df,df,df,df,at,1e5],float)

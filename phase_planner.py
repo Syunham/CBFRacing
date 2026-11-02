@@ -1,4 +1,4 @@
-"""Two-gate free-duration phase initialization and reference audit."""
+"""Configurable gate-preview phase planner with free durations and dense audit."""
 import numpy as np
 import casadi as ca
 import torch
@@ -28,7 +28,11 @@ def integrate_symbolic(x, u, duration, c, substeps):
         axis = ca.vertcat(2*(qx*qz+qw*qy), 2*(qy*qz-qw*qx), 1-2*(qx*qx+qy*qy))
         torque = ca.vertcat(arm*(u[0]+u[1]-u[2]-u[3]),
             arm*(-u[0]+u[1]+u[2]-u[3]), tc*(u[0]-u[1]+u[2]-u[3]))
-        return ca.vertcat(s[3:6], ca.sum1(u)/v['mass']*axis-ca.DM([0,0,v['gravity']]),
+        R=ca.vertcat(ca.horzcat(1-2*(qy*qy+qz*qz),2*(qx*qy-qw*qz),2*(qx*qz+qw*qy)),
+            ca.horzcat(2*(qx*qy+qw*qz),1-2*(qx*qx+qz*qz),2*(qy*qz-qw*qx)),
+            ca.horzcat(2*(qx*qz-qw*qy),2*(qy*qz+qw*qx),1-2*(qx*qx+qy*qy)))
+        drag=ca.mtimes([R,ca.diag(ca.DM(v['linear_drag_kg_s'])),R.T,s[3:6]])/v['mass']
+        return ca.vertcat(s[3:6], ca.sum1(u)/v['mass']*axis-ca.DM([0,0,v['gravity']])-drag,
             qd, (torque-ca.cross(s[10:13],inertia*s[10:13]))/inertia)
     h = duration/substeps; states = []
     for _ in range(substeps):
@@ -46,11 +50,11 @@ class GatePlanner:
     No auxiliary spatial target, terminal-rest equality, or collision term exists.
     """
     def __init__(self, c, course, optimize_durations=False):
-        self.c=c; self.course=course; m=c['cells_per_leg']; n=2*m; self.n=n
+        self.c=c; self.course=course; m=c['cells_per_leg']; M=c.get('preview_gates',2); n=M*m; self.n=n; self.M=M
         self.optimize_durations=optimize_durations
         X=ca.MX.sym('X',13,n+1); U=ca.MX.sym('U',4,n)
-        x0=ca.MX.sym('x0',13); G=ca.MX.sym('G',3,2); N=ca.MX.sym('N',3,2)
-        H=ca.MX.sym('half',2,2); T=ca.MX.sym('durations',2)
+        x0=ca.MX.sym('x0',13); G=ca.MX.sym('G',3,M); N=ca.MX.sym('N',3,M)
+        H=ca.MX.sym('half',2,M); T=ca.MX.sym('durations',M)
         p=ca.vertcat(x0,ca.vec(G),ca.vec(N),ca.vec(H),*([] if optimize_durations else [T]))
         z=ca.vertcat(ca.vec(X),ca.vec(U),*([T] if optimize_durations else [])); expr=[]; lo=[]; hi=[]
         def add(a,l=0.,h=0.):
@@ -80,7 +84,7 @@ class GatePlanner:
             f+=c['angular_weight']*h*ca.sumsqr(X[10:13,k])
             if k:
                 f+=c['thrust_difference_weight']/h*ca.sumsqr(U[:,k]-U[:,k-1])
-        for j,k in enumerate([m,n]):
+        for j,k in enumerate(range(m,n+1,m)):
             normal=N[:,j]; lateral=ca.cross(ca.DM([0,0,1]),normal)
             lateral=lateral/ca.sqrt(ca.sumsqr(lateral)); vertical=ca.cross(normal,lateral)
             displacement=X[:3,k]-G[:,j]
@@ -92,7 +96,7 @@ class GatePlanner:
             for before in range(j*m,k):
                 add(ca.dot(normal,X[:3,before]-G[:,j]),-np.inf,1e-8)
             add(ca.dot(normal,X[:3,k-1]-G[:,j]),-np.inf,-.005)
-            if j==0: add(ca.dot(normal,X[:3,k+1]-G[:,j]),.005,np.inf)
+            if j<M-1: add(ca.dot(normal,X[:3,k+1]-G[:,j]),.005,np.inf)
         g=ca.vertcat(*expr)
         opts={'print_time':False,'error_on_fail':False,'expand':c.get('expand_solver_graph',False),'ipopt':{
             'print_level':0,'sb':'yes','tol':2e-7,'acceptable_tol':1e-6,
@@ -105,8 +109,8 @@ class GatePlanner:
         self.lbx=np.r_[np.full(X.numel(),-np.inf),np.full(U.numel(),c['vehicle']['thrust_min'])]
         self.ubx=np.r_[np.full(X.numel(),np.inf),np.full(U.numel(),c['vehicle']['thrust_max'])]
         if optimize_durations:
-            self.lbx=np.r_[self.lbx,np.full(2,c['duration_min'])]
-            self.ubx=np.r_[self.ubx,np.full(2,c['duration_max'])]
+            self.lbx=np.r_[self.lbx,np.full(M,c['duration_min'])]
+            self.ubx=np.r_[self.ubx,np.full(M,c['duration_max'])]
         sx=ca.SX.sym('s',13);su=ca.SX.sym('u',4);sh=ca.SX.sym('h')
         sn,_=integrate_symbolic(sx,su,sh,c,c['audit_substeps'])
         self.step=ca.Function('independent_step',[sx,su,sh],[sn])
@@ -115,7 +119,7 @@ class GatePlanner:
         m=self.c['cells_per_leg']; ts=np.r_[0,np.cumsum(durations)]
         speed=np.clip(np.linalg.norm(np.diff(np.vstack([state[:3],gates]),axis=0),axis=1)/durations,.8,2.5)
         spline=CubicHermiteSpline(ts,np.vstack([state[:3],gates]),np.vstack([state[3:6],normals*speed[:,None]]))
-        grid=np.r_[np.linspace(0,ts[1],m+1),np.linspace(ts[1],ts[2],m+1)[1:]]
+        grid=np.r_[0.,*[np.linspace(ts[j],ts[j+1],m+1)[1:] for j in range(len(durations))]]
         positions=torch.tensor(spline(grid)[None],dtype=torch.float64)
         cfg=dict(self.c,dt=float(sum(durations)/(2*m)),terminal_rest=False)
         x,u=seed_states(torch.tensor(state[None],dtype=torch.float64),positions,cfg)
@@ -123,8 +127,8 @@ class GatePlanner:
 
     def solve(self,state,gates,normals,half,durations,warm=None):
         durations=np.asarray(durations,dtype=float)
-        if durations.shape!=(2,) or not np.isfinite(durations).all() or np.any(durations<=0):
-            raise ValueError('Two positive finite flight durations are required.')
+        if durations.shape!=(self.M,) or not np.isfinite(durations).all() or np.any(durations<=0):
+            raise ValueError(f'{self.M} positive finite flight durations are required.')
         par=np.r_[state,gates.T.ravel(order='F'),normals.T.ravel(order='F'),half.T.ravel(order='F')]
         if not self.optimize_durations:par=np.r_[par,durations]
         start=self.seed(state,gates,normals,durations) if warm is None else warm
@@ -146,7 +150,7 @@ class GatePlanner:
             start=zz.copy()
         if not good:raise RuntimeError('Phase initialization failed: '+str(trace))
         ns=13*(self.n+1)
-        if self.optimize_durations:durations=zz[-2:]
+        if self.optimize_durations:durations=zz[-self.M:]
         result=dict(X=zz[:ns].reshape(13,self.n+1,order='F'),U=zz[ns:ns+4*self.n].reshape(4,self.n,order='F'),
             durations=durations.copy(),z=zz,value=float(r['f']),
             gradient=np.asarray(self.envelope(r['x'],par,r['lam_g'])).ravel(),
@@ -157,7 +161,7 @@ class GatePlanner:
     def audit(self,plan,state):
         c=self.c;m=c['cells_per_leg'];x=state.copy();xs=[x.copy()];times=[0.];t=0.
         cell_durations=plan.get('cell_durations',np.repeat(plan['durations']/m,m))
-        event_nodes=list(plan.get('event_nodes',[m,2*m]))
+        event_nodes=list(plan.get('event_nodes',list(range(m,self.n+1,m))))
         node_error=0.; gate_records=[]
         for k in range(self.n):
             h=cell_durations[k]

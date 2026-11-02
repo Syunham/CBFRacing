@@ -1,0 +1,10 @@
+{
+  "scope": "Fixed observed-state OCP sensitivity, not full-flight speed improvement",
+  "seed": "Archived future states as offline initialization only; no deployable policy claim",
+  "progress_extension": "Diagnostic extrapolation only; unsafe for operational use without a longer valid reference",
+  "max_seconds_per_solve": 6,
+  "states": [
+    2.8,
+    5.6
+  ]
+}

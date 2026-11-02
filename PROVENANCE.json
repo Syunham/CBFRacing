@@ -13,5 +13,17 @@
   "direct_cbf_datasets_sha256": {
     "data\\direct_dataset_v1.npz": "643b1b65ce343edfd75ad3cbfcb97f0444b190d78db2ad6832db4741206f32c5",
     "data\\direct_dataset_v2.npz": "ded1974e58435be7ecb34382075c306e66927e317facdb1e2b60c0fd510deb5f"
+  },
+  "integration_20261102": {
+    "source_experiment": "table_drag_tuning_20261102/mu220",
+    "physics_source": "config.json",
+    "preview_gates": 5,
+    "frontend": "phase",
+    "original_complementarity_gates": 2,
+    "progress": 220.0,
+    "checkpoint_retraining": false,
+    "verification": "outputs\\integrated_drag_preview5_mu220_20261102",
+    "peak_speed": 16.715983321641573,
+    "duration": 12.86
   }
 }

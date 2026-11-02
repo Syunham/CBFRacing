@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "parameterization": "Two-gate original CPC",
+  "physical_parameters": "Both expressions use updated drag and vehicle parameters",
+  "maximum_expression_difference": 0.0,
+  "samples": 3,
+  "scope": "Objective, constraints and bounds regression; no original-CPC full-flight feasibility claim."
+}

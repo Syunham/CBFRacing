@@ -30,7 +30,15 @@ def animate(r):
     for row in r['front']:
         if row['success']:
             with np.load(next(files)) as data:plans[row['agent']].append((row['time'],data['gates'].copy()))
-    fig=plt.figure(figsize=(9,5));ax=fig.add_subplot(111,projection='3d');draw_gates(ax,r['course'])
+    fig=plt.figure(figsize=(10,7));grid=fig.add_gridspec(2,1,height_ratios=[2.4,1],hspace=.12)
+    ax=fig.add_subplot(grid[0],projection='3d');speed_ax=fig.add_subplot(grid[1]);draw_gates(ax,r['course'])
+    speed=np.linalg.norm(r['x'][:,:,3:6],axis=-1)
+    for i,c in enumerate(COLORS):speed_ax.plot(r['t'],speed[:,i],color=c,label=f'UAV {i+1}',lw=1.)
+    speed_cursor=speed_ax.axvline(0,color='#888888',lw=.8)
+    speed_ax.set(xlim=(0,r['t'][-1]+.05),ylim=(0,max(1.,speed.max()*1.1)),xlabel='Physical flight time (s)',ylabel='Speed (m/s)')
+    speed_ax.spines[['top','right']].set_visible(False);speed_ax.grid(alpha=.2);speed_ax.legend(loc='lower right')
+    np.savetxt(REPORT/'speed_source_data.csv',np.c_[r['t'],speed],delimiter=',',header='time_s,uav1_speed_mps,uav2_speed_mps',comments='')
+    fig.subplots_adjust(left=.09,right=.97,bottom=.11,top=.91)
     world=np.array(r['course']['world_box']);ax.set(xlim=world[[0,3]],ylim=world[[1,4]],zlim=world[[2,5]],xlabel='x (m)',ylabel='y (m)',zlabel='z (m)')
     ax.set_box_aspect(world[3:]-world[:3]);ax.view_init(elev=30,azim=-58)
     lines=[];dots=[];bodies=[];allocations=[]
@@ -43,6 +51,7 @@ def animate(r):
     fig.text(.5,.025,f'{r["name"]} | {outcome} | {r["summary"]["stop_reason"]}',ha='center',fontsize=7,wrap=True)
     frames=np.unique(np.r_[np.arange(0,r['t'][-1],.1),r['t'][-1]])
     def update(t):
+        speed_cursor.set_xdata([t,t])
         k=min(max(int(np.searchsorted(r['t'],t,side='right')),1),len(r['t']));x=r['x'][k-1]
         for i in range(2):
             lines[i].set_data_3d(*r['x'][:k,i,:3].T);dots[i].set_data_3d(*x[i:i+1,:3].T)

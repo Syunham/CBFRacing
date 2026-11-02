@@ -22,7 +22,7 @@ def course():
     return dict(name='Exact supplied Split-S',centers=POSITIONS.tolist(),normals=normals.tolist(),coordinate_axes=np.array(axes).tolist(),
         rotations_wxyz=QUATERNIONS.tolist(),sizes=np.tile([.4,1.5,1.5],(7,1)).tolist(),half_extents=np.full((7,2),.75).tolist(),
         start_position_center=START.tolist(),start_attitude=(ATTITUDE/np.linalg.norm(ATTITUDE)).tolist(),world_box=WORLD.tolist(),scale=1.,
-        required_laps=2,required_events_per_agent=14,extra_waypoints=0,physical_gate_events_per_cpc=2)
+        required_laps=2,required_events_per_agent=14,extra_waypoints=0,physical_gate_events_per_cpc=configuration()['preview_gates'])
 
 def initial_states(separation=1.3,forward_offset=0.):
     c=course();q=np.array(c['start_attitude']);side=np.array(c['coordinate_axes'][0]);direction=POSITIONS[0]-START;direction/=np.linalg.norm(direction)
@@ -31,8 +31,8 @@ def initial_states(separation=1.3,forward_offset=0.):
     return out
 
 def configuration():
-    return json.loads((HERE/'config.json').read_text(encoding='utf-8'))
+    c=json.loads((HERE/'config.json').read_text(encoding='utf-8'));c['preview_gates']=int(os.environ.get('CPC_PREVIEW_GATES',c['online_planning']['preview_gates']));return c
 
-def gate_pair(index):
-    c=course();ids=np.array([index,index+1])%7
+def gate_pair(index,count=2):
+    c=course();ids=np.arange(index,index+count)%7
     return tuple(np.array(c[k])[ids] for k in ['centers','normals','half_extents','coordinate_axes'])

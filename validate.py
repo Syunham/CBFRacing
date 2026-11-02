@@ -9,11 +9,14 @@ import argparse,shutil
 def main(args):
     output=HERE/'outputs'/args.name;output.mkdir(parents=True,exist_ok=False);(output/'plans').mkdir();(output/'source').mkdir()
     for p in HERE.glob('*.py'):shutil.copy2(p,output/'source'/p.name)
-    c=course();save_json(output/'course.json',c);cfg=dict(vars(args),gates=c['centers'],dynamics=MODEL,
+    os.environ['CPC_PREVIEW_GATES']=str(args.preview_gates);os.environ['CPC_FRONTEND']=args.frontend;os.environ['PREVIEW_SPLINE']=args.preview_spline;os.environ['PHYSICAL_GATE_GUARD']='1' if args.physical_gate_guard else '0';c=course();save_json(output/'course.json',c);cfg=dict(vars(args),gates=c['centers'],dynamics=MODEL,
         dt=DT,feedback=FEEDBACK,physical_speed_limit=None,manual_waiting=False,manual_priority=False,
-        actuator_limits='CPC and MPCC0..7N/rotor; MPC body-rate norm9.4rad/s',future_trajectory_exchange=False,
+        actuator_limits=f'CPC and MPCC0..{MODEL["thrust_max"]}N/rotor; MPC body-rate norm{MODEL["omega_max"]}rad/s',body_rate_norm_limit=MODEL['omega_max'],future_trajectory_exchange=False,
         target_events_per_agent=args.target_gates or 7*args.laps,cbf=True,clearance=.5,clearance_margin=.05,cbf_radius=np.inf,
-        qwp=10000.,qnom=10.,sigma=.6,cbf_rate=3.,gate_funnel=True,gate_slope=2.,gate_progress_slope=args.gate_progress_slope)
+        qwp=args.gate_weight,qnom=args.contour_weight,sigma=.6,cbf_rate=3.,gate_funnel=True,gate_slope=2.,gate_progress_slope=args.gate_progress_slope)
+    save_json(output/'config.json',cfg)
+    save_json(output/'planner_config.json',configuration())
+    cfg['cpc_mode']='original' if args.frontend=='original' else 'fixed_phase_events_free_durations'
     save_json(output/'config.json',cfg)
     states=initial_states(args.separation,args.forward_offset);ts=[0.];history=[states.copy()];logs=[];front=[];events=[[],[]];counts=[0,0];refs=[None,None]
     planner=LocalPlanner(args.allocator,args.cpc_seconds,args.phase_retries)
@@ -35,7 +38,7 @@ def main(args):
             arc=np.r_[0.,np.cumsum(np.linalg.norm(np.diff(xx[:,:3],axis=0),axis=1))];X[:,17]=np.interp(grid,tt,arc);X[:,18]=np.clip(np.linalg.norm(X[:,3:6],axis=1),0.,30.)
             states[i,17]=0.;states[i,18]=np.linalg.norm(states[i,3:6]);X[0]=states[i]
             U=np.c_[np.clip(np.diff(X[:,13:17],axis=0)/DT,-200,200),np.clip(np.diff(X[:,18])/DT,-40,40)]
-            solvers[i].seed(X,U);solvers[i].current(states[i]);solvers[i].weights(mu=args.progress,df=.05,at=2.)
+            solvers[i].seed(X,U);solvers[i].current(states[i]);solvers[i].weights(mu=args.progress,q_l=args.lag_weight,df=args.thrust_rate_weight,at=args.progress_acceleration_weight)
             row.update(success=True,allocation=plan['allocation'],duration=plan['durations'],audit=plan['audit'],cpc_seconds=plan['wall_seconds'],seed_diagnostics=plan['seed_diagnostics'],phase_solve_trace=plan.get('phase_solve_trace',[]))
         except Exception as e:row.update(success=False,error=str(e),seed_diagnostics=getattr(planner,'last_seed_diagnostics',None),phase_solve_trace=getattr(planner.phase,'last_trace',None))
         row['seconds']=time.perf_counter()-begin;front.append(row);save_json(output/'frontends.json',front);print('front',row,flush=True)
@@ -59,7 +62,7 @@ def main(args):
             # Constrain the learned passage point tightly near its gate; it is
             # already strictly inside the actual physical aperture.
             od[:,40]=args.gate_halfwidth if planner.net is not None else .68
-            solver.data(od);solver.weights(mu=args.progress,df=.05,at=2.)
+            solver.data(od);solver.weights(mu=args.progress,q_l=args.lag_weight,df=args.thrust_rate_weight,at=args.progress_acceleration_weight)
             attempts=[]
             for retry in range(args.solve_retries+1):
                 result=solver.step();attempts.append(result)
@@ -69,7 +72,21 @@ def main(args):
                 recoverable_status=('Maximum_Iterations_Exceeded','Maximum_WallTime_Exceeded','Error_In_Step_Computation','Search_Direction_Becomes_Too_Small','Restoration_Failed')
                 if args.retry_infeasible:recoverable_status+=('Infeasible_Problem_Detected',)
                 if result['message'] not in recoverable_status or not np.isfinite(solver.X).all() or not np.isfinite(solver.U).all():break
-            X,U=solver.prediction();row=dict(time=ts[-1],agent=i,controller_seconds=time.perf_counter()-tick,solve=result,solve_attempts=attempts,control=U[0].copy())
+            X,U=solver.prediction();refinement=[]
+            for outer in range(args.reference_refine):
+                delta=X[:,17]-solver.od[:,12]
+                local=solver.od[:,:3]+solver.od[:,3:6]*delta[:,None]+solver.od[:,6:9]*delta[:,None]**2+solver.od[:,9:12]*delta[:,None]**3
+                exact=refs[i]['spline'](X[:,17]);error=float(np.linalg.norm(local-exact,axis=1).max())
+                refinement.append(dict(iteration=outer,maximum_reference_error=error,success=result['status']==0))
+                if result['status']==0 and error<.015:break
+                if not np.isfinite(X).all():break
+                progress=np.clip(X[:,17],0.,refs[i]['length'])
+                for order in range(4):od[:,3*order:3*order+3]=refs[i]['spline'](progress,order)/[1,1,2,6][order]
+                od[:,12]=progress
+                curve=refs[i]['spline'](progress);d2=np.sum((curve[:,None,:]-np.array(cfg['gates'])[None,:,:])**2,axis=2)
+                od[:,13]=cfg['qnom']+cfg['qwp']*np.exp(-.5*d2/cfg['sigma']**2).sum(axis=1)
+                solver.data(od);result=solver.step();attempts.append(result);X,U=solver.prediction()
+            row=dict(time=ts[-1],agent=i,controller_seconds=time.perf_counter()-tick,solve=result,solve_attempts=attempts,reference_refinement=refinement,control=U[0].copy())
             chosen.append((X,U));roundlog.append(row)
             if result['status']!=0:
                 reason=f'Agent{i} MPCC failure: '+result['message'];np.savez_compressed(output/f'failed_ocp_{k}_{i}.npz',X=X,U=U,initial=snap[i],od=solver.od,weights=solver.w,mu=solver.mu,snapshot=snap)
@@ -78,7 +95,7 @@ def main(args):
         states=dense[:,-1].copy();distance=np.linalg.norm(dense[0,:,:3]-dense[1,:,:3],axis=1)
         if distance.min()<.5-1e-4:reason='Actual clearance violation'
         world=np.array(c['world_box'])
-        if (np.linalg.norm(dense[:,:,10:13],axis=-1).max()>9.401 or dense[:,:,13:17].min()<-.001 or dense[:,:,13:17].max()>7.001 or
+        if (np.linalg.norm(dense[:,:,10:13],axis=-1).max()>MODEL['omega_max']+.001 or dense[:,:,13:17].min()<-.001 or dense[:,:,13:17].max()>7.001 or
             (dense[:,:,:3]<world[:3]-.001).any() or (dense[:,:,:3]>world[3:]+.001).any()):reason='Actual physical bound violation'
         for r in roundlog:r['min_actual_distance']=float(distance.min())
         logs.extend(roundlog);ts.append(ts[-1]+FEEDBACK);history.append(states.copy());pending=[]
@@ -118,14 +135,19 @@ def main(args):
     print('SUMMARY',summary,flush=True)
 
 def build_parser():
+    defaults=configuration()['online_planning']
     p=argparse.ArgumentParser();p.add_argument('--name',required=True);p.add_argument('--allocator',default=str(HERE/'models/allocation.pt'))
     p.set_defaults(cpc_mode='original',predictor='ca',barrier='soft',allocation_zero=False)
-    p.add_argument('--laps',type=int,default=2);p.add_argument('--max-time',type=float,default=40.);p.add_argument('--horizon',type=int,default=20)
-    p.add_argument('--progress',type=float,default=80.);p.add_argument('--penalty',type=float,default=100000.)
+    p.add_argument('--laps',type=int,default=2);p.add_argument('--max-time',type=float,default=40.);p.add_argument('--horizon',type=int,default=defaults['horizon'])
+    p.add_argument('--preview-spline',choices=['hermite','c2'],default=defaults['preview_spline']);p.add_argument('--reference-refine',type=int,default=defaults['reference_refine'])
+    p.add_argument('--physical-gate-guard',action=argparse.BooleanOptionalAction,default=defaults['physical_gate_guard'])
+    for name in ['lag_weight','gate_weight','contour_weight','thrust_rate_weight','progress_acceleration_weight']:
+        p.add_argument('--'+name.replace('_','-'),type=float,default=defaults[name])
+    p.add_argument('--frontend',choices=['original','phase'],default=defaults['frontend']);p.add_argument('--preview-gates',type=int,default=defaults['preview_gates']);p.add_argument('--progress',type=float,default=defaults['progress']);p.add_argument('--penalty',type=float,default=100000.)
     p.add_argument('--separation',type=float,default=1.3);p.add_argument('--forward-offset',type=float,default=0.)
     p.add_argument('--solver-seconds',type=float,help='Per MPCC attempt: analytic8s, learned35s');p.add_argument('--iterations',type=int,help='Per MPCC attempt: analytic900, learned4000');p.add_argument('--cpc-seconds',type=float,default=35.);p.add_argument('--solve-retries',type=int,default=2)
     p.add_argument('--gate-progress-slope',type=float,default=1.5);p.add_argument('--target-gates',type=int)
-    p.add_argument('--cbf',dest='cbf_branch',choices=['analytic','learned'],default='analytic',help='Safety branch; learned selects the validated direct-output v7 profile')
+    p.add_argument('--cbf',dest='cbf_branch',choices=['analytic','learned'],default=defaults['cbf_branch'],help='Safety branch; learned selects the validated direct-output v7 profile')
     p.add_argument('--cbf-checkpoint',dest='h_checkpoint',help='Custom direct-h checkpoint for --cbf learned')
     p.add_argument('--cbf-alpha',type=float,help='Discrete CBF rate; default3')
     p.add_argument('--gate-halfwidth',type=float,help='Tracking funnel base halfwidth: analytic0.20m, learned0.16m')
@@ -136,7 +158,12 @@ def build_parser():
 
 def parse_args(argv=None):
     parser=build_parser();args=parser.parse_args(argv)
-    try:return resolve_safety(args)
+    try:
+        if args.preview_gates<2:raise ValueError('At least two physical gate events are required by the time initializer.')
+        if args.frontend=='original' and args.preview_gates!=2:raise ValueError('The retained original complementarity CPC supports two gates; use --preview-gates 2 or --frontend phase.')
+        if args.reference_refine<0 or args.horizon<1:raise ValueError('Reference iterations must be nonnegative and horizon positive.')
+        if min(args.lag_weight,args.gate_weight,args.contour_weight,args.thrust_rate_weight,args.progress_acceleration_weight)<0:raise ValueError('Cost weights must be nonnegative.')
+        return resolve_safety(args)
     except ValueError as error:parser.error(str(error))
 
 if __name__=='__main__':main(parse_args())
