@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "gates_passed": [
+    14,
+    14
+  ],
+  "target_per_agent": 14,
+  "duration": 16.579999999999735,
+  "stop_reason": "completed",
+  "min_distance": 0.7661796407854596,
+  "controller_p50_ms": 99.01644999990822,
+  "controller_p95_ms": 209.52260999911232,
+  "frontend_seconds": 105.42533620000177,
+  "frontend_queries": 29,
+  "max_speed": 12.393009124189614,
+  "manual_waiting": false,
+  "expert_fallbacks": 0,
+  "physical_latency_simulated": false
+}

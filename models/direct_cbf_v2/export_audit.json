@@ -1,0 +1,7 @@
+{
+  "torch_casadi_error": 1.1102230246251565e-16,
+  "gradient_error": 5.706707643330505e-11,
+  "states": 12,
+  "gradient_dimensions": 25,
+  "output": "Direct tanh MLP scalar, no analytical output residual"
+}

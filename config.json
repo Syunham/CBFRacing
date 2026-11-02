@@ -1,0 +1,42 @@
+{
+  "scale": 1.0,
+  "laps": 2,
+  "cells_per_leg": 18,
+  "integration_substeps": 4,
+  "audit_substeps": 16,
+  "speed_limit": null,
+  "body_rate_limit": 9.4,
+  "height_bounds": [
+    0.05,
+    6.0
+  ],
+  "quaternion_scalar_min": -1.0,
+  "quaternion_vector_max": 1.0,
+  "gate_forward_speed_min": 0.8,
+  "aperture_reserve": 0.02,
+  "physical_position_margin": 0.002,
+  "physical_quaternion_margin": 0.0,
+  "expand_solver_graph": true,
+  "duration_min": 0.4,
+  "duration_max": 8.0,
+  "initial_durations": [
+    2.0,
+    2.0
+  ],
+  "effort_weight": 0.003,
+  "thrust_difference_weight": 0.0005,
+  "angular_weight": 0.0005,
+  "vehicle": {
+    "mass": 0.85,
+    "inertia": [
+      0.0025,
+      0.0021,
+      0.0043
+    ],
+    "arm_length": 0.15,
+    "torque_coefficient": 0.022,
+    "gravity": 9.81,
+    "thrust_min": 0.0,
+    "thrust_max": 7.0
+  }
+}

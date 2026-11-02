@@ -1,0 +1,287 @@
+{
+  "full_goal_case_passed": true,
+  "checks": {
+    "exact_supplied_track": true,
+    "physical_replay": true,
+    "all_executed_controls_from_successful_solves": true,
+    "dense_clearance": true,
+    "angular_rate_norm": true,
+    "rotor_thrust": true,
+    "world_bounds": true,
+    "quaternion": true,
+    "ordered_gates": true,
+    "two_laps_each": true,
+    "no_explicit_waiting": true,
+    "fresh_from_initial_rest": true
+  },
+  "passed_gate_counts": [
+    14,
+    14
+  ],
+  "gates": [
+    {
+      "agent": 0,
+      "sequence": 1,
+      "gate": 1,
+      "time": 1.1359535634517675,
+      "plane_error": 4.762499811183929e-09,
+      "aperture_coordinate": 0.3775056482483471,
+      "forward_speed": 10.581455441513128
+    },
+    {
+      "agent": 0,
+      "sequence": 2,
+      "gate": 2,
+      "time": 2.426225768923761,
+      "plane_error": 5.823750370836933e-10,
+      "aperture_coordinate": 0.6883220023961227,
+      "forward_speed": 7.007021971616515
+    },
+    {
+      "agent": 0,
+      "sequence": 3,
+      "gate": 3,
+      "time": 3.457906273603442,
+      "plane_error": 1.7609438907051356e-10,
+      "aperture_coordinate": 0.35355175488370594,
+      "forward_speed": 11.05346152487944
+    },
+    {
+      "agent": 0,
+      "sequence": 4,
+      "gate": 4,
+      "time": 5.294428302645659,
+      "plane_error": 9.83250814101666e-10,
+      "aperture_coordinate": 0.5421858665090493,
+      "forward_speed": 1.8396124228065787
+    },
+    {
+      "agent": 0,
+      "sequence": 5,
+      "gate": 5,
+      "time": 5.938719344735107,
+      "plane_error": 1.5193890590126102e-09,
+      "aperture_coordinate": 0.3707890226313131,
+      "forward_speed": 3.004960924199817
+    },
+    {
+      "agent": 0,
+      "sequence": 6,
+      "gate": 6,
+      "time": 7.192892647385532,
+      "plane_error": 2.8251974093507215e-09,
+      "aperture_coordinate": 0.2264622730489932,
+      "forward_speed": 10.349436506719629
+    },
+    {
+      "agent": 0,
+      "sequence": 7,
+      "gate": 7,
+      "time": 8.338971005678088,
+      "plane_error": 1.470884442023035e-09,
+      "aperture_coordinate": 0.2673844078170704,
+      "forward_speed": 7.486918664084876
+    },
+    {
+      "agent": 0,
+      "sequence": 8,
+      "gate": 1,
+      "time": 9.27822762489308,
+      "plane_error": 1.869927268582927e-10,
+      "aperture_coordinate": 0.354211604623695,
+      "forward_speed": 11.19940624960719
+    },
+    {
+      "agent": 0,
+      "sequence": 9,
+      "gate": 2,
+      "time": 10.5771231782435,
+      "plane_error": 3.5476528381650496e-09,
+      "aperture_coordinate": 0.6947875526328433,
+      "forward_speed": 6.82477922906208
+    },
+    {
+      "agent": 0,
+      "sequence": 10,
+      "gate": 3,
+      "time": 11.613031194209894,
+      "plane_error": 3.769474010706375e-09,
+      "aperture_coordinate": 0.35373903047565586,
+      "forward_speed": 11.11518919162365
+    },
+    {
+      "agent": 0,
+      "sequence": 11,
+      "gate": 4,
+      "time": 13.46388220190982,
+      "plane_error": 6.17583317819026e-10,
+      "aperture_coordinate": 0.46262525557442835,
+      "forward_speed": 2.0292314227599078
+    },
+    {
+      "agent": 0,
+      "sequence": 12,
+      "gate": 5,
+      "time": 14.072841991185932,
+      "plane_error": 1.7564643073342268e-09,
+      "aperture_coordinate": 0.3652117310676761,
+      "forward_speed": 2.9817250556724573
+    },
+    {
+      "agent": 0,
+      "sequence": 13,
+      "gate": 6,
+      "time": 15.329274783134222,
+      "plane_error": 4.414497989380095e-09,
+      "aperture_coordinate": 0.5020888337279149,
+      "forward_speed": 8.742636268778206
+    },
+    {
+      "agent": 0,
+      "sequence": 14,
+      "gate": 7,
+      "time": 16.49505302727196,
+      "plane_error": 1.4450965146739492e-09,
+      "aperture_coordinate": 0.2561004958562998,
+      "forward_speed": 5.080777505078171
+    },
+    {
+      "agent": 1,
+      "sequence": 1,
+      "gate": 1,
+      "time": 1.2372065955400473,
+      "plane_error": 2.6084878423926483e-09,
+      "aperture_coordinate": 0.5390033645313127,
+      "forward_speed": 8.840707266659795
+    },
+    {
+      "agent": 1,
+      "sequence": 2,
+      "gate": 2,
+      "time": 2.5602763944864293,
+      "plane_error": 2.340655669286207e-09,
+      "aperture_coordinate": 0.17269759082254676,
+      "forward_speed": 5.36175251597281
+    },
+    {
+      "agent": 1,
+      "sequence": 3,
+      "gate": 3,
+      "time": 3.649601987004283,
+      "plane_error": 4.8499680382896315e-09,
+      "aperture_coordinate": 0.5402546932162545,
+      "forward_speed": 10.605749054277997
+    },
+    {
+      "agent": 1,
+      "sequence": 4,
+      "gate": 4,
+      "time": 5.489382392168016,
+      "plane_error": 6.615596959136383e-11,
+      "aperture_coordinate": 0.3702072451645684,
+      "forward_speed": 1.543492408268632
+    },
+    {
+      "agent": 1,
+      "sequence": 5,
+      "gate": 5,
+      "time": 6.125772178769069,
+      "plane_error": 9.023706226685135e-10,
+      "aperture_coordinate": 0.528688795882502,
+      "forward_speed": 2.6954972561045114
+    },
+    {
+      "agent": 1,
+      "sequence": 6,
+      "gate": 6,
+      "time": 7.337991966605118,
+      "plane_error": 2.4359105288418448e-09,
+      "aperture_coordinate": 0.5568607497337026,
+      "forward_speed": 8.519773827652408
+    },
+    {
+      "agent": 1,
+      "sequence": 7,
+      "gate": 7,
+      "time": 8.44611135482779,
+      "plane_error": 3.323529396137559e-09,
+      "aperture_coordinate": 0.6094596935324018,
+      "forward_speed": 6.269185490134472
+    },
+    {
+      "agent": 1,
+      "sequence": 8,
+      "gate": 1,
+      "time": 9.363514910340198,
+      "plane_error": 2.1775675984603282e-09,
+      "aperture_coordinate": 0.5541903741763413,
+      "forward_speed": 9.455074461570828
+    },
+    {
+      "agent": 1,
+      "sequence": 9,
+      "gate": 2,
+      "time": 10.693694716691832,
+      "plane_error": 4.4303227753061947e-10,
+      "aperture_coordinate": 0.14479269042642962,
+      "forward_speed": 4.8738157695470585
+    },
+    {
+      "agent": 1,
+      "sequence": 10,
+      "gate": 3,
+      "time": 11.788553278446035,
+      "plane_error": 4.425361466164901e-09,
+      "aperture_coordinate": 0.5412744706706019,
+      "forward_speed": 10.643005750103008
+    },
+    {
+      "agent": 1,
+      "sequence": 11,
+      "gate": 4,
+      "time": 13.636477889418401,
+      "plane_error": 3.886437838218626e-10,
+      "aperture_coordinate": 0.36652949911967614,
+      "forward_speed": 1.5683433063162637
+    },
+    {
+      "agent": 1,
+      "sequence": 12,
+      "gate": 5,
+      "time": 14.256884748339438,
+      "plane_error": 8.30186586142645e-10,
+      "aperture_coordinate": 0.5273878326899624,
+      "forward_speed": 2.5392843281474136
+    },
+    {
+      "agent": 1,
+      "sequence": 13,
+      "gate": 6,
+      "time": 15.470888233184574,
+      "plane_error": 4.1642411741094065e-10,
+      "aperture_coordinate": 0.5550491578137347,
+      "forward_speed": 8.556282671540707
+    },
+    {
+      "agent": 1,
+      "sequence": 14,
+      "gate": 7,
+      "time": 16.560456395745014,
+      "plane_error": 3.8101277688440405e-10,
+      "aperture_coordinate": 0.6104085782156387,
+      "forward_speed": 6.363524093766789
+    }
+  ],
+  "actual_dense_min_distance": 0.7661796407854665,
+  "max_rate_norm": 9.313731623742008,
+  "min_force": 0.44213315137914977,
+  "max_force": 6.996198003557733,
+  "world_violation": 0.0,
+  "max_quaternion_error": 1.1479946993020462e-09,
+  "max_physical_replay_error": 1.0605865519153213e-08,
+  "max_speed": 12.39301932872977,
+  "executed_accepted_queries": 1658,
+  "physical_integration_samples": 13265,
+  "continuous_time_scope": "Dense numerical replay, not a formal interval safety certificate",
+  "computation_latency_in_physics": false
+}

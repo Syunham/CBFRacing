@@ -1,0 +1,333 @@
+{
+  "network_checkpoint_sha256": "3a972784d8b3f32bc6f269ef5c3fc4ab638cb4bdaeb4d3acd99f917e34f4ec5c",
+  "queries": 29,
+  "all_points_recomputed_from_network": true,
+  "allocation_error": 0.0,
+  "target_geometry_error": 3.885780586188048e-16,
+  "cpc_progress_error": 4.440892098500626e-16,
+  "cpc_complementarity_residual": 9.991567098561166e-07,
+  "two_physical_events_only": true,
+  "no_waiting_time_output": true,
+  "source": "Direct recomputation using saved physical own initial state, simultaneous observed neighbor PV and frozen checkpoint",
+  "query_details": [
+    {
+      "agent": 0,
+      "index": 0,
+      "time": 0.0,
+      "allocation": [
+        -0.45,
+        -0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.6108890141604282
+    },
+    {
+      "agent": 1,
+      "index": 0,
+      "time": 0.0,
+      "allocation": [
+        0.45,
+        0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.6339960880384805
+    },
+    {
+      "agent": 0,
+      "index": 1,
+      "time": 1.1400000000000006,
+      "allocation": [
+        -0.45,
+        -0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.861201151515317
+    },
+    {
+      "agent": 1,
+      "index": 1,
+      "time": 1.2400000000000007,
+      "allocation": [
+        0.45,
+        0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.8695716183004747
+    },
+    {
+      "agent": 0,
+      "index": 2,
+      "time": 2.4400000000000017,
+      "allocation": [
+        -0.45,
+        -0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.601968566064958
+    },
+    {
+      "agent": 1,
+      "index": 2,
+      "time": 2.580000000000002,
+      "allocation": [
+        0.45,
+        0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.586767619655611
+    },
+    {
+      "agent": 0,
+      "index": 3,
+      "time": 3.4600000000000026,
+      "allocation": [
+        -0.45,
+        -0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.4399975785730925
+    },
+    {
+      "agent": 1,
+      "index": 3,
+      "time": 3.660000000000003,
+      "allocation": [
+        0.45,
+        0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.439996797104843
+    },
+    {
+      "agent": 0,
+      "index": 4,
+      "time": 5.299999999999975,
+      "allocation": [
+        -0.45,
+        -0.3607190177671048
+      ],
+      "mu_rows": 2,
+      "total_time": 1.2611068306761675
+    },
+    {
+      "agent": 1,
+      "index": 4,
+      "time": 5.499999999999971,
+      "allocation": [
+        0.45,
+        -0.44952856684855047
+      ],
+      "mu_rows": 2,
+      "total_time": 1.2522514415121222
+    },
+    {
+      "agent": 0,
+      "index": 5,
+      "time": 5.939999999999961,
+      "allocation": [
+        -0.34340552126757495,
+        -0.15818696920832884
+      ],
+      "mu_rows": 2,
+      "total_time": 1.6815861254693814
+    },
+    {
+      "agent": 1,
+      "index": 5,
+      "time": 6.139999999999957,
+      "allocation": [
+        0.4499999999999997,
+        0.44997849621525643
+      ],
+      "mu_rows": 2,
+      "total_time": 1.617495070918323
+    },
+    {
+      "agent": 0,
+      "index": 6,
+      "time": 7.1999999999999345,
+      "allocation": [
+        0.4499999998436333,
+        0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.6898171284215513
+    },
+    {
+      "agent": 1,
+      "index": 6,
+      "time": 7.3399999999999315,
+      "allocation": [
+        -0.45,
+        -0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.6307748144228453
+    },
+    {
+      "agent": 0,
+      "index": 7,
+      "time": 8.339999999999911,
+      "allocation": [
+        -0.45,
+        -0.44999996517427626
+      ],
+      "mu_rows": 2,
+      "total_time": 1.6498785289984874
+    },
+    {
+      "agent": 1,
+      "index": 7,
+      "time": 8.459999999999908,
+      "allocation": [
+        0.45,
+        0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.5607065177958315
+    },
+    {
+      "agent": 0,
+      "index": 8,
+      "time": 9.279999999999891,
+      "allocation": [
+        -0.45,
+        -0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.8925927064846442
+    },
+    {
+      "agent": 1,
+      "index": 8,
+      "time": 9.379999999999889,
+      "allocation": [
+        0.45,
+        0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.9035481132801007
+    },
+    {
+      "agent": 0,
+      "index": 9,
+      "time": 10.579999999999863,
+      "allocation": [
+        -0.45,
+        -0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.6191673966028806
+    },
+    {
+      "agent": 1,
+      "index": 9,
+      "time": 10.69999999999986,
+      "allocation": [
+        0.45,
+        0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.6106025411300717
+    },
+    {
+      "agent": 0,
+      "index": 10,
+      "time": 11.619999999999841,
+      "allocation": [
+        -0.45,
+        -0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.43999776705679
+    },
+    {
+      "agent": 1,
+      "index": 10,
+      "time": 11.799999999999837,
+      "allocation": [
+        0.45,
+        0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.4399968866692119
+    },
+    {
+      "agent": 0,
+      "index": 11,
+      "time": 13.479999999999801,
+      "allocation": [
+        -0.45,
+        -0.34609741915548803
+      ],
+      "mu_rows": 2,
+      "total_time": 1.2345252467215955
+    },
+    {
+      "agent": 1,
+      "index": 11,
+      "time": 13.639999999999798,
+      "allocation": [
+        0.45,
+        -0.44967637837042607
+      ],
+      "mu_rows": 2,
+      "total_time": 1.2520773222074657
+    },
+    {
+      "agent": 0,
+      "index": 12,
+      "time": 14.079999999999789,
+      "allocation": [
+        0.3956926258471946,
+        0.4194011094196689
+      ],
+      "mu_rows": 2,
+      "total_time": 1.6223923521145556
+    },
+    {
+      "agent": 1,
+      "index": 12,
+      "time": 14.259999999999785,
+      "allocation": [
+        0.44999999999979895,
+        0.4437822982442758
+      ],
+      "mu_rows": 2,
+      "total_time": 1.6363190448979135
+    },
+    {
+      "agent": 0,
+      "index": 13,
+      "time": 15.339999999999762,
+      "allocation": [
+        0.45,
+        0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.678387267848834
+    },
+    {
+      "agent": 1,
+      "index": 13,
+      "time": 15.479999999999759,
+      "allocation": [
+        -0.45,
+        -0.45
+      ],
+      "mu_rows": 2,
+      "total_time": 1.631460440861987
+    },
+    {
+      "agent": 0,
+      "index": 14,
+      "time": 16.499999999999737,
+      "allocation": [
+        -0.4448795172900361,
+        0.44999893370260063
+      ],
+      "mu_rows": 2,
+      "total_time": 1.7566469321972005
+    }
+  ]
+}

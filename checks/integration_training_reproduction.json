@@ -1,0 +1,9 @@
+{
+  "maximum_parameter_difference": 0.0,
+  "selected": "models/direct_cbf_v2/h.pt",
+  "retrained": "models/integration_cbf_reproduce_20261030/h.pt",
+  "steps": 4000,
+  "seed": 7,
+  "source_initial": "models/direct_cbf_v2/initial.pt",
+  "local_frozen_dataset": "data/direct_dataset_v2.npz"
+}

@@ -1,0 +1,16 @@
+{
+  "status": "finished",
+  "pid": 54372,
+  "returncode": 0,
+  "command": [
+    "D:\\semixcode\\20261008new\\swarm_cpc_reproduction\\.venv_dpp\\Scripts\\python.exe",
+    "D:\\semixcode\\20261008new\\20261029CBFracing\\validate.py",
+    "--name",
+    "integrated_analytic_20261030",
+    "--cbf",
+    "analytic",
+    "--target-gates",
+    "2"
+  ],
+  "seconds": 58.83341860000655
+}

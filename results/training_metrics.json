@@ -1,0 +1,576 @@
+{
+  "seed": 31,
+  "steps": 2500,
+  "best_step": 2300,
+  "region_aware": true,
+  "teacher_labels_used": false,
+  "pretrained_allocator_used": false,
+  "training_seconds": 60.01794119999977,
+  "initial": {
+    "loss": 94.03990859813872,
+    "collision": 0.31089048511469697,
+    "crossing": 0.3157614210726852,
+    "motion": 0.8423544614548072,
+    "region_unsafe_fraction": 1.0,
+    "minimum_nominal_distance": 0.00010002725781000808,
+    "mean_abs_offset": 0.01622537247856446
+  },
+  "final": {
+    "loss": 0.21758427561927055,
+    "collision": 0.0005345243772896222,
+    "crossing": 0.0006306732692073389,
+    "motion": 0.795502627102121,
+    "region_unsafe_fraction": 0.2177734375,
+    "minimum_nominal_distance": 0.19081293174889954,
+    "mean_abs_offset": 0.4492846567424409
+  },
+  "history": [
+    {
+      "step": 0,
+      "train": {
+        "loss": 93.16034796603833,
+        "collision": 0.3079263687702073,
+        "crossing": 0.31286561130576956,
+        "motion": 0.8309152270053616,
+        "region_unsafe_fraction": 1.0,
+        "minimum_nominal_distance": 0.00016002602805541098,
+        "mean_abs_offset": 0.01656301028886142
+      },
+      "validation": {
+        "loss": 90.23800464129872,
+        "collision": 0.29829268956742633,
+        "crossing": 0.30301369730133015,
+        "motion": 0.8407227580865622,
+        "region_unsafe_fraction": 1.0,
+        "minimum_nominal_distance": 0.00010441932454072566,
+        "mean_abs_offset": 0.02374195435115731
+      }
+    },
+    {
+      "step": 100,
+      "train": {
+        "loss": 0.7775107680361275,
+        "collision": 0.0023794766145442438,
+        "crossing": 0.0025457762569800406,
+        "motion": 0.7170674882597473,
+        "region_unsafe_fraction": 0.2708333333333333,
+        "minimum_nominal_distance": 0.105734392596373,
+        "mean_abs_offset": 0.4348085035502698
+      },
+      "validation": {
+        "loss": 0.7691559942032562,
+        "collision": 0.002346049098869958,
+        "crossing": 0.002497326326613499,
+        "motion": 0.7952966978029385,
+        "region_unsafe_fraction": 0.2734375,
+        "minimum_nominal_distance": 0.03752584794454088,
+        "mean_abs_offset": 0.4360127816661334
+      }
+    },
+    {
+      "step": 200,
+      "train": {
+        "loss": 0.6203765831935748,
+        "collision": 0.00185448266816476,
+        "crossing": 0.0020272995975994072,
+        "motion": 0.7030840173571455,
+        "region_unsafe_fraction": 0.20833333333333334,
+        "minimum_nominal_distance": 0.11378254608781481,
+        "mean_abs_offset": 0.4423605850962858
+      },
+      "validation": {
+        "loss": 0.5387210317162396,
+        "collision": 0.0015954494859443844,
+        "crossing": 0.0017111918519236034,
+        "motion": 0.7953280944766545,
+        "region_unsafe_fraction": 0.23046875,
+        "minimum_nominal_distance": 0.03636476281631006,
+        "mean_abs_offset": 0.44254267955088034
+      }
+    },
+    {
+      "step": 300,
+      "train": {
+        "loss": 0.2755857622404199,
+        "collision": 0.000726102889273793,
+        "crossing": 0.000818364341851518,
+        "motion": 0.8181991473991979,
+        "region_unsafe_fraction": 0.234375,
+        "minimum_nominal_distance": 0.17668495262431796,
+        "mean_abs_offset": 0.44717207665740605
+      },
+      "validation": {
+        "loss": 0.4181737119668678,
+        "collision": 0.001195383450297206,
+        "crossing": 0.0013073166437535507,
+        "motion": 0.7954621307228859,
+        "region_unsafe_fraction": 0.2333984375,
+        "minimum_nominal_distance": 0.1045065790724465,
+        "mean_abs_offset": 0.4458975367083996
+      }
+    },
+    {
+      "step": 400,
+      "train": {
+        "loss": 0.483152455100081,
+        "collision": 0.001403387523009974,
+        "crossing": 0.0015003489014662223,
+        "motion": 0.8916836824197371,
+        "region_unsafe_fraction": 0.19791666666666666,
+        "minimum_nominal_distance": 0.018871510290612237,
+        "mean_abs_offset": 0.4464127048637958
+      },
+      "validation": {
+        "loss": 0.36700763577425544,
+        "collision": 0.0010292938176540514,
+        "crossing": 0.0011322260741798483,
+        "motion": 0.7954662017436587,
+        "region_unsafe_fraction": 0.2275390625,
+        "minimum_nominal_distance": 0.01626849614942213,
+        "mean_abs_offset": 0.4468498054316645
+      }
+    },
+    {
+      "step": 500,
+      "train": {
+        "loss": 0.26977363835550305,
+        "collision": 0.0007322623969229338,
+        "crossing": 0.0008108065232633211,
+        "motion": 0.7058724124077967,
+        "region_unsafe_fraction": 0.19270833333333334,
+        "minimum_nominal_distance": 0.09688228115958433,
+        "mean_abs_offset": 0.44814158434274987
+      },
+      "validation": {
+        "loss": 0.31869168432469536,
+        "collision": 0.0008710362314808201,
+        "crossing": 0.0009683341280534325,
+        "motion": 0.7954673348251302,
+        "region_unsafe_fraction": 0.2255859375,
+        "minimum_nominal_distance": 0.06806041528881275,
+        "mean_abs_offset": 0.44753735166648567
+      }
+    },
+    {
+      "step": 600,
+      "train": {
+        "loss": 0.3804512485123658,
+        "collision": 0.0011024710068141639,
+        "crossing": 0.001200567295765695,
+        "motion": 0.6396762174419351,
+        "region_unsafe_fraction": 0.140625,
+        "minimum_nominal_distance": 0.04307784769543886,
+        "mean_abs_offset": 0.4471744153117072
+      },
+      "validation": {
+        "loss": 0.30916110176924627,
+        "collision": 0.00083887396106701,
+        "crossing": 0.000936934828059881,
+        "motion": 0.7954765344096412,
+        "region_unsafe_fraction": 0.224609375,
+        "minimum_nominal_distance": 0.002254745842063504,
+        "mean_abs_offset": 0.44779395406328076
+      }
+    },
+    {
+      "step": 700,
+      "train": {
+        "loss": 0.2608428986897511,
+        "collision": 0.0006812167002107809,
+        "crossing": 0.0008051110755223927,
+        "motion": 0.6974243322005393,
+        "region_unsafe_fraction": 0.16145833333333334,
+        "minimum_nominal_distance": 0.3679401233222087,
+        "mean_abs_offset": 0.4486814553100386
+      },
+      "validation": {
+        "loss": 0.2987525816475464,
+        "collision": 0.0008049812125653769,
+        "crossing": 0.0009014229535135112,
+        "motion": 0.7954770420055273,
+        "region_unsafe_fraction": 0.22265625,
+        "minimum_nominal_distance": 0.00580051459692444,
+        "mean_abs_offset": 0.44799953852939867
+      }
+    },
+    {
+      "step": 800,
+      "train": {
+        "loss": 0.17086354484889357,
+        "collision": 0.0003989597599849376,
+        "crossing": 0.0004801988302270932,
+        "motion": 0.7192807139146272,
+        "region_unsafe_fraction": 0.1875,
+        "minimum_nominal_distance": 0.3712550152406426,
+        "mean_abs_offset": 0.449030114127311
+      },
+      "validation": {
+        "loss": 0.298468548570271,
+        "collision": 0.000803192375816973,
+        "crossing": 0.0009013085583536759,
+        "motion": 0.795486412578625,
+        "region_unsafe_fraction": 0.2236328125,
+        "minimum_nominal_distance": 0.044339053836411124,
+        "mean_abs_offset": 0.4481225791130512
+      }
+    },
+    {
+      "step": 900,
+      "train": {
+        "loss": 0.14163146171443167,
+        "collision": 0.0002981892392869026,
+        "crossing": 0.00036022589659901345,
+        "motion": 0.7967533728099978,
+        "region_unsafe_fraction": 0.21354166666666666,
+        "minimum_nominal_distance": 0.3628038999424626,
+        "mean_abs_offset": 0.4495254401821011
+      },
+      "validation": {
+        "loss": 0.2766009714089703,
+        "collision": 0.0007328535907216321,
+        "crossing": 0.0008258513354968613,
+        "motion": 0.7954746123074041,
+        "region_unsafe_fraction": 0.220703125,
+        "minimum_nominal_distance": 0.03670165461956108,
+        "mean_abs_offset": 0.44835407061659915
+      }
+    },
+    {
+      "step": 1000,
+      "train": {
+        "loss": 0.18561888447208394,
+        "collision": 0.00044740724816672624,
+        "crossing": 0.0005082641342152507,
+        "motion": 0.7848783165389296,
+        "region_unsafe_fraction": 0.13541666666666666,
+        "minimum_nominal_distance": 0.23234070054811223,
+        "mean_abs_offset": 0.4488081492130654
+      },
+      "validation": {
+        "loss": 0.2784269546385314,
+        "collision": 0.0007379354731897575,
+        "crossing": 0.0008329347489205982,
+        "motion": 0.7954777256270497,
+        "region_unsafe_fraction": 0.2197265625,
+        "minimum_nominal_distance": 0.019602756738740023,
+        "mean_abs_offset": 0.4484404274383915
+      }
+    },
+    {
+      "step": 1100,
+      "train": {
+        "loss": 0.18620312550256474,
+        "collision": 0.00043441605063548113,
+        "crossing": 0.0005109349847663333,
+        "motion": 0.8273698067909939,
+        "region_unsafe_fraction": 0.21875,
+        "minimum_nominal_distance": 0.2824156958703645,
+        "mean_abs_offset": 0.4494955851100637
+      },
+      "validation": {
+        "loss": 0.26761080212179456,
+        "collision": 0.000701354631219081,
+        "crossing": 0.0007974023880423763,
+        "motion": 0.7954816317168343,
+        "region_unsafe_fraction": 0.2197265625,
+        "minimum_nominal_distance": 0.0020227775924399824,
+        "mean_abs_offset": 0.4485511853017595
+      }
+    },
+    {
+      "step": 1200,
+      "train": {
+        "loss": 0.1828092680737879,
+        "collision": 0.000423123106588459,
+        "crossing": 0.0004999627309492708,
+        "motion": 0.8262885429451172,
+        "region_unsafe_fraction": 0.22916666666666666,
+        "minimum_nominal_distance": 0.2960271056828738,
+        "mean_abs_offset": 0.4495126230957813
+      },
+      "validation": {
+        "loss": 0.2534915509139139,
+        "collision": 0.0006541812329239003,
+        "crossing": 0.0007504404171696286,
+        "motion": 0.7954876369755707,
+        "region_unsafe_fraction": 0.2197265625,
+        "minimum_nominal_distance": 0.15530129707388632,
+        "mean_abs_offset": 0.4486957574708127
+      }
+    },
+    {
+      "step": 1300,
+      "train": {
+        "loss": 0.12810172251465135,
+        "collision": 0.0002556042918480848,
+        "crossing": 0.0003063821119406761,
+        "motion": 0.8154618445089653,
+        "region_unsafe_fraction": 0.171875,
+        "minimum_nominal_distance": 0.37783179725925436,
+        "mean_abs_offset": 0.449419828918815
+      },
+      "validation": {
+        "loss": 0.260582923626166,
+        "collision": 0.0006776873715259501,
+        "crossing": 0.0007742082202641449,
+        "motion": 0.7954878367757608,
+        "region_unsafe_fraction": 0.2197265625,
+        "minimum_nominal_distance": 0.16306329950862689,
+        "mean_abs_offset": 0.4486951868349899
+      }
+    },
+    {
+      "step": 1400,
+      "train": {
+        "loss": 0.2008338320401189,
+        "collision": 0.0004758344840816909,
+        "crossing": 0.000576173201637409,
+        "motion": 0.7999140159159331,
+        "region_unsafe_fraction": 0.19791666666666666,
+        "minimum_nominal_distance": 0.3779543197012458,
+        "mean_abs_offset": 0.4499611992828596
+      },
+      "validation": {
+        "loss": 0.272337025127743,
+        "collision": 0.0007167382092413735,
+        "crossing": 0.0008135203341839933,
+        "motion": 0.7954833292366374,
+        "region_unsafe_fraction": 0.21875,
+        "minimum_nominal_distance": 0.09769029715611277,
+        "mean_abs_offset": 0.44863636740988433
+      }
+    },
+    {
+      "step": 1500,
+      "train": {
+        "loss": 0.26758155068722633,
+        "collision": 0.0006753453301560592,
+        "crossing": 0.0008074505601441157,
+        "motion": 0.8427078773633749,
+        "region_unsafe_fraction": 0.19791666666666666,
+        "minimum_nominal_distance": 0.35995316129961386,
+        "mean_abs_offset": 0.4490790638031535
+      },
+      "validation": {
+        "loss": 0.26371678889730527,
+        "collision": 0.000687800813595619,
+        "crossing": 0.0007849853227645889,
+        "motion": 0.795487923714086,
+        "region_unsafe_fraction": 0.21875,
+        "minimum_nominal_distance": 0.1353898907699043,
+        "mean_abs_offset": 0.44871377940761464
+      }
+    },
+    {
+      "step": 1600,
+      "train": {
+        "loss": 0.15111048589964732,
+        "collision": 0.00034370703710175456,
+        "crossing": 0.0003965621198105854,
+        "motion": 0.7409650178572914,
+        "region_unsafe_fraction": 0.16145833333333334,
+        "minimum_nominal_distance": 0.3719663067302422,
+        "mean_abs_offset": 0.44862165646343394
+      },
+      "validation": {
+        "loss": 0.2731691182934989,
+        "collision": 0.00071917723266027,
+        "crossing": 0.0008166240168165657,
+        "motion": 0.7954869074354619,
+        "region_unsafe_fraction": 0.21875,
+        "minimum_nominal_distance": 0.05961109727366992,
+        "mean_abs_offset": 0.4486824854184305
+      }
+    },
+    {
+      "step": 1700,
+      "train": {
+        "loss": 0.14254726013519797,
+        "collision": 0.00031241912299145294,
+        "crossing": 0.00036802594902226725,
+        "motion": 0.7491052473247697,
+        "region_unsafe_fraction": 0.19270833333333334,
+        "minimum_nominal_distance": 0.3337151272129446,
+        "mean_abs_offset": 0.44895463219191356
+      },
+      "validation": {
+        "loss": 0.251183623537431,
+        "collision": 0.000645195074805032,
+        "crossing": 0.0007440265952102123,
+        "motion": 0.7954925760632854,
+        "region_unsafe_fraction": 0.21875,
+        "minimum_nominal_distance": 0.17801994694928547,
+        "mean_abs_offset": 0.4488821689943294
+      }
+    },
+    {
+      "step": 1800,
+      "train": {
+        "loss": 0.24067843633970049,
+        "collision": 0.0006046086362660808,
+        "crossing": 0.0007254069836952411,
+        "motion": 0.7628800882510158,
+        "region_unsafe_fraction": 0.19270833333333334,
+        "minimum_nominal_distance": 0.37718904826716815,
+        "mean_abs_offset": 0.44951617653254133
+      },
+      "validation": {
+        "loss": 0.2590138057843904,
+        "collision": 0.0006713166844385853,
+        "crossing": 0.0007701047209118565,
+        "motion": 0.7954905272564002,
+        "region_unsafe_fraction": 0.2177734375,
+        "minimum_nominal_distance": 0.03889595888816147,
+        "mean_abs_offset": 0.4488545279829201
+      }
+    },
+    {
+      "step": 1900,
+      "train": {
+        "loss": 0.30968709579682163,
+        "collision": 0.0008064758032641969,
+        "crossing": 0.0009711903937546702,
+        "motion": 0.8000824612994901,
+        "region_unsafe_fraction": 0.21875,
+        "minimum_nominal_distance": 0.33009702611158953,
+        "mean_abs_offset": 0.4496361250638922
+      },
+      "validation": {
+        "loss": 0.25853785568578674,
+        "collision": 0.0006708155875724401,
+        "crossing": 0.0007674298935847884,
+        "motion": 0.7954904298640761,
+        "region_unsafe_fraction": 0.2177734375,
+        "minimum_nominal_distance": 0.04760576022163307,
+        "mean_abs_offset": 0.44888830127239565
+      }
+    },
+    {
+      "step": 2000,
+      "train": {
+        "loss": 0.178972072973025,
+        "collision": 0.000426398017957344,
+        "crossing": 0.0005163596997687274,
+        "motion": 0.6904311305333489,
+        "region_unsafe_fraction": 0.14583333333333334,
+        "minimum_nominal_distance": 0.3802900492860837,
+        "mean_abs_offset": 0.4499519532978556
+      },
+      "validation": {
+        "loss": 0.24834583274634214,
+        "collision": 0.0006369643037145613,
+        "crossing": 0.0007333303506063286,
+        "motion": 0.795493298828836,
+        "region_unsafe_fraction": 0.2177734375,
+        "minimum_nominal_distance": 0.054437054118060164,
+        "mean_abs_offset": 0.44896486439020505
+      }
+    },
+    {
+      "step": 2100,
+      "train": {
+        "loss": 0.18745235430637847,
+        "collision": 0.00044423679755966597,
+        "crossing": 0.0005313569755203947,
+        "motion": 0.7616303687513047,
+        "region_unsafe_fraction": 0.19791666666666666,
+        "minimum_nominal_distance": 0.3341397893449435,
+        "mean_abs_offset": 0.4495297944482443
+      },
+      "validation": {
+        "loss": 0.24803599996470593,
+        "collision": 0.0006360794936507678,
+        "crossing": 0.0007321458136617369,
+        "motion": 0.7954930819765406,
+        "region_unsafe_fraction": 0.2177734375,
+        "minimum_nominal_distance": 0.040268809841306596,
+        "mean_abs_offset": 0.4490087146266465
+      }
+    },
+    {
+      "step": 2200,
+      "train": {
+        "loss": 0.1768402153639196,
+        "collision": 0.00040304180885231404,
+        "crossing": 0.0004859104789453432,
+        "motion": 0.8092450905943543,
+        "region_unsafe_fraction": 0.17708333333333334,
+        "minimum_nominal_distance": 0.34913954688248544,
+        "mean_abs_offset": 0.44980977239737047
+      },
+      "validation": {
+        "loss": 0.22620331680430444,
+        "collision": 0.0005630081185043247,
+        "crossing": 0.0006596546685073128,
+        "motion": 0.7954996574532707,
+        "region_unsafe_fraction": 0.2177734375,
+        "minimum_nominal_distance": 0.1325570512826165,
+        "mean_abs_offset": 0.4492067604008198
+      }
+    },
+    {
+      "step": 2300,
+      "train": {
+        "loss": 0.24847491523861798,
+        "collision": 0.0006107437533719363,
+        "crossing": 0.0007356613307808467,
+        "motion": 0.8696395222612471,
+        "region_unsafe_fraction": 0.19791666666666666,
+        "minimum_nominal_distance": 0.35404444560187415,
+        "mean_abs_offset": 0.44958509736068925
+      },
+      "validation": {
+        "loss": 0.21758427561927055,
+        "collision": 0.0005345243772896222,
+        "crossing": 0.0006306732692073389,
+        "motion": 0.795502627102121,
+        "region_unsafe_fraction": 0.2177734375,
+        "minimum_nominal_distance": 0.19081293174889954,
+        "mean_abs_offset": 0.4492846567424409
+      }
+    },
+    {
+      "step": 2400,
+      "train": {
+        "loss": 0.16473321845107558,
+        "collision": 0.00037919849758942726,
+        "crossing": 0.00045931674479188944,
+        "motion": 0.7183881095218163,
+        "region_unsafe_fraction": 0.16145833333333334,
+        "minimum_nominal_distance": 0.3803376357565036,
+        "mean_abs_offset": 0.4499268092120894
+      },
+      "validation": {
+        "loss": 0.2533674378331409,
+        "collision": 0.0006539820465150587,
+        "crossing": 0.0007497843611988513,
+        "motion": 0.7954910242464773,
+        "region_unsafe_fraction": 0.216796875,
+        "minimum_nominal_distance": 0.09948755094061179,
+        "mean_abs_offset": 0.44901880107362535
+      }
+    },
+    {
+      "step": 2499,
+      "train": {
+        "loss": 0.19111908510103823,
+        "collision": 0.0004375641651732003,
+        "crossing": 0.0005290667454613808,
+        "motion": 0.8617700012131333,
+        "region_unsafe_fraction": 0.19270833333333334,
+        "minimum_nominal_distance": 0.37099714460865535,
+        "mean_abs_offset": 0.4498828180428179
+      },
+      "validation": {
+        "loss": 0.23093462276410687,
+        "collision": 0.0005786057665858093,
+        "crossing": 0.0006755970013522084,
+        "motion": 0.7954978991273931,
+        "region_unsafe_fraction": 0.2177734375,
+        "minimum_nominal_distance": 0.03854878869034794,
+        "mean_abs_offset": 0.44920619194153794
+      }
+    }
+  ],
+  "scope": "Differentiable trajectory surrogate with task collision/motion loss; not full rigid-body closed-loop training"
+}

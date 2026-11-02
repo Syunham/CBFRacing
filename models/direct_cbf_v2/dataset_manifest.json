@@ -1,0 +1,38 @@
+{
+  "trajectories": [
+    {
+      "folder": "D:\\semixcode\\20261008new\\20261029CBFracing\\outputs\\standalone_two_laps",
+      "sha256": "39211a9988812300465c47c17d947fc90b5939fe6c507d65785c7dec817273cb",
+      "rows": 830,
+      "validation": false
+    },
+    {
+      "folder": "D:\\semixcode\\20261008new\\allocation_scratch_20261029\\runs\\task_region_s47_two_laps",
+      "sha256": "2cb4103df71b47dd39742e751d1c855514c2498c1c668093ef49cccdefb9c277",
+      "rows": 830,
+      "validation": true
+    },
+    {
+      "folder": "direct_cbf_racing_20261029\\outputs\\v1_hard_nominal",
+      "sha256": "71b759dbad41e05e60bfd7834f279779da0d2ceee3b1c3902393620f94dddc87",
+      "rows": 838,
+      "validation": false
+    },
+    {
+      "folder": "direct_cbf_racing_20261029\\outputs\\v1_hard_s19_nominal",
+      "sha256": "1d0c7bbba22a478254d12f20b9da01d2cb714447816f804beb2b283ed3deeb1f",
+      "rows": 838,
+      "validation": false
+    },
+    {
+      "folder": "direct_cbf_racing_20261029\\outputs\\v1_soft_nominal",
+      "sha256": "7c9fa3586a09004f1eded137614a2db844229e48484309aaa09e2900ca5afd3f",
+      "rows": 832,
+      "validation": false
+    }
+  ],
+  "safe_window": 0.64,
+  "rows": 33501,
+  "label_rules": "Complete observed safe continuation, current collision unsafe, others unknown; equal-motion states provide scale anchors",
+  "validation": "Distinct rollout and random seeds, same-course development validation"
+}

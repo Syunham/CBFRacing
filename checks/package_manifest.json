@@ -1,0 +1,90 @@
+{
+  "source_files": [
+    {
+      "file": "allocation.py",
+      "sha256": "aa2eed1c123aaddf77c5110aa68a48957c6ab304d926bc6ebb4f5e52c0e8847a"
+    },
+    {
+      "file": "audit.py",
+      "sha256": "ed3d65c72c9fc2e6461ab1d4af3b003e974a26e9a3346556d688588961360114"
+    },
+    {
+      "file": "context.py",
+      "sha256": "7a2542ce37bdd94b71f5ec2cf17c40864cd591fc285cb7a2d860508c228884c4"
+    },
+    {
+      "file": "controller.py",
+      "sha256": "db88245c3b788318f1869f1c186282ba235f29283f15b34e77640abc6585fd86"
+    },
+    {
+      "file": "model.py",
+      "sha256": "64fd566b1402bd8f22ec023da776a5b9585744212c63c9e1714411e7c21643b1"
+    },
+    {
+      "file": "original_cpc.py",
+      "sha256": "c0d93dd7020a7acbfd0991ec1e45d56a1ba050a46d63f5f1c6c8ca5383a2166f"
+    },
+    {
+      "file": "phase_planner.py",
+      "sha256": "2bbb66ae6e6bb9eaa66c581c6df72c6223b0c96564af794f9c8872e332b0f0ed"
+    },
+    {
+      "file": "planning.py",
+      "sha256": "6791e8acb6ea5230aad3d806f1b3a83c4287256f59e5deb70452518c115c46e9"
+    },
+    {
+      "file": "reference.py",
+      "sha256": "672ddfbcbe396133329eaff75ae48c5de9ba6338b96c2e41efe202004fdf644c"
+    },
+    {
+      "file": "render.py",
+      "sha256": "bd775dd9a979a15fc71555b551bbce72b78710652d3ca5ecbb1300e5bcb6f7df"
+    },
+    {
+      "file": "seed.py",
+      "sha256": "30a91ab0d63daae951439a8684713561d8a1f19aae4594575378803b16c333ec"
+    },
+    {
+      "file": "selfcheck.py",
+      "sha256": "50cdff857fd5e6bf3b63d1b83f687b9561abeb64d05941ea176dfca2d079c473"
+    },
+    {
+      "file": "timing.py",
+      "sha256": "9c98a63324e9ed65ce7758673c5dd98dca19332df00e334e7e1fd8a6914f6316"
+    },
+    {
+      "file": "train.py",
+      "sha256": "742e8674a2d1bea6a97993c8c682c269971c20b7478481491556d42f3fd6bf3a"
+    },
+    {
+      "file": "validate.py",
+      "sha256": "19975f679d5f59e171ec733fc88024e687bc233152d78f4f748f075b912491db"
+    },
+    {
+      "file": "verify_policy.py",
+      "sha256": "7e0809b769307ebeb8723aa2ce4d0d4fe0c5d73db64b4ef28c06d12d9327e695"
+    },
+    {
+      "file": "warm_seed.py",
+      "sha256": "c4e5e5d43e6088c37aed422adaf8fad91468eb2b7e7a4b9766abde6e63ee6719"
+    }
+  ],
+  "models": [
+    {
+      "file": "allocation.pt",
+      "sha256": "3a972784d8b3f32bc6f269ef5c3fc4ab638cb4bdaeb4d3acd99f917e34f4ec5c"
+    },
+    {
+      "file": "time_initializer.pt",
+      "sha256": "d11afef9ae0779a52eacadd4565f502bed5efb968da51d83d4ed39483f98bdde"
+    }
+  ],
+  "full_reproduction_passed": true,
+  "gates": [
+    14,
+    14
+  ],
+  "flight_seconds": 16.579999999999735,
+  "dense_min_distance": 0.7661796407854665,
+  "no_translation_speed_cap": true
+}

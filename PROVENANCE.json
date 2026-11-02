@@ -1,0 +1,17 @@
+{
+  "source_project": "allocation_scratch_20261029",
+  "scope": "Original analytic branch plus CLI-selectable direct-output learned CBF v7",
+  "teacher_allocation_labels": false,
+  "frozen_time_initializer_retained": true,
+  "allocation_sha256": "3a972784d8b3f32bc6f269ef5c3fc4ab638cb4bdaeb4d3acd99f917e34f4ec5c",
+  "time_initializer_sha256": "d11afef9ae0779a52eacadd4565f502bed5efb968da51d83d4ed39483f98bdde",
+  "copied_example": "Existing verified full flight; checkpoint path relocated, no new flight claim",
+  "direct_cbf_source_project": "direct_cbf_racing_20261029",
+  "direct_cbf_sha256": "9d1a275fe73e55c73680ed7c4bdc383846134b2239ca06ce16eddc93100ac625",
+  "direct_cbf_profile": "learned_cbf_profile.json",
+  "direct_cbf_extra_learned_margin": false,
+  "direct_cbf_datasets_sha256": {
+    "data\\direct_dataset_v1.npz": "643b1b65ce343edfd75ad3cbfcb97f0444b190d78db2ad6832db4741206f32c5",
+    "data\\direct_dataset_v2.npz": "ded1974e58435be7ecb34382075c306e66927e317facdb1e2b60c0fd510deb5f"
+  }
+}

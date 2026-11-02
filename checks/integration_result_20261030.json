@@ -1,0 +1,51 @@
+{
+  "complete": true,
+  "analytic_scope": "Two-gate prefix and unchanged-NLP regression",
+  "learned_scope": "Fresh full two-UAV two-lap flight",
+  "runs": {
+    "analytic": {
+      "success": true,
+      "gates_passed": [
+        2,
+        2
+      ],
+      "target_per_agent": 2,
+      "duration": 2.580000000000002,
+      "stop_reason": "completed",
+      "min_distance": 0.8718015514684674,
+      "controller_p50_ms": 95.57769999810262,
+      "controller_p95_ms": 206.19967499696935,
+      "frontend_seconds": 18.821791599999415,
+      "frontend_queries": 5,
+      "max_speed": 11.579828663748327,
+      "manual_waiting": false,
+      "expert_fallbacks": 0,
+      "physical_latency_simulated": false
+    },
+    "learned": {
+      "success": true,
+      "gates_passed": [
+        14,
+        14
+      ],
+      "target_per_agent": 14,
+      "duration": 16.659999999999734,
+      "stop_reason": "completed",
+      "min_distance": 0.8324581477173285,
+      "controller_p50_ms": 179.13310000221827,
+      "controller_p95_ms": 347.54774999964866,
+      "frontend_seconds": 120.81503319996409,
+      "frontend_queries": 29,
+      "max_speed": 12.830197041815655,
+      "manual_waiting": false,
+      "expert_fallbacks": 0,
+      "physical_latency_simulated": false
+    }
+  },
+  "selected_checkpoint_sha256": "9d1a275fe73e55c73680ed7c4bdc383846134b2239ca06ce16eddc93100ac625",
+  "training_parameters_reproduced_exactly": true,
+  "original_checkpoint_hashes_preserved": true,
+  "all_runtime_modules_local": true,
+  "analytic_nlp_regression_passed": true,
+  "cli_regression_tests": 3
+}
