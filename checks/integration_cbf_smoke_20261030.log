@@ -1,2 +1,0 @@
-integration_cbf_smoke_20261030 0 {'loss': 3.9510865751568316, 'safe_loss': 0.09481486596602826, 'unsafe_loss': 0.009726319458780865, 'derivative': 0.20986107842732013, 'scale_fit': 0.5305805241738225, 'false_safe': 286, 'unsafe': 2202, 'false_unsafe': 3254, 'safe': 3606, 'anchor_mae': 0.6131750917350944}
-TRAINED integration_cbf_smoke_20261030 3.4543403367211565

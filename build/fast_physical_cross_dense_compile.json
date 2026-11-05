@@ -1,0 +1,34 @@
+{
+  "key": "ca32abac15317717e9e9",
+  "command": [
+    "D:/mingw64/bin\\gcc.EXE",
+    "-O2",
+    "-shared",
+    "-o",
+    "D:\\semixcode\\20261008new\\minimum_snap_times_20261105\\build\\fast_physical_cross_dense.dll",
+    "D:\\semixcode\\20261008new\\minimum_snap_times_20261105\\build\\fast_physical_cross_dense.c",
+    "-lm"
+  ],
+  "code": 0,
+  "seconds": 261.20353479999903,
+  "stderr": "",
+  "max_absolute_error": 8.881784197001252e-16,
+  "samples": 3,
+  "timings": [
+    {
+      "symbolic": 7.9304500031867065,
+      "native": 2.3074500022630673,
+      "correction": 1.793399998859968
+    },
+    {
+      "symbolic": 7.817199995770352,
+      "native": 2.3791999992681667,
+      "correction": 1.9666499974846374
+    },
+    {
+      "symbolic": 7.817499994416721,
+      "native": 2.4951999985205475,
+      "correction": 1.8447500006004702
+    }
+  ]
+}

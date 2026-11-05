@@ -1,5 +1,5 @@
 """Task-loss learning with a differentiable trajectory surrogate, no labels."""
-from allocation import *
+from cbfracing.networks.allocation import *
 import argparse,copy
 
 def scenes(count,seed):   # dataset
@@ -88,10 +88,13 @@ def main(a):
 
 def cli(argv=None):
     selector=argparse.ArgumentParser(add_help=False)
-    selector.add_argument('--task',choices=['allocation','cbf'],default='allocation',help='Train gate allocation (default) or direct scalar CBF; --task cbf --help shows CBF options')
+    selector.add_argument('--task',choices=['allocation','cbf','time'],default='allocation',help='Train gate allocation, direct scalar CBF, or five-event times')
     selected,_=selector.parse_known_args(argv)
-    if selected.task=='cbf':
-        from safety_train import build_parser,main as train_cbf
+    if selected.task=='time':
+        from cbfracing.training.events import build_parser,main as train_events
+        train_events(build_parser(parents=[selector]).parse_args(argv))
+    elif selected.task=='cbf':
+        from cbfracing.training.safety_train import build_parser,main as train_cbf
         parser=build_parser(parents=[selector]);train_cbf(parser.parse_args(argv))
     else:
         p=argparse.ArgumentParser(parents=[selector]);p.add_argument('--name',default='from_scratch');p.add_argument('--seed',type=int,default=31);p.add_argument('--steps',type=int,default=2500);p.set_defaults(region_aware=True);p.add_argument('--center-weight',type=float,default=.015);main(p.parse_args(argv))

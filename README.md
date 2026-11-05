@@ -1,100 +1,85 @@
-# CBFracing：门内穿越点分配 + 滚动轨迹前端 + MPCC/CBF
+# CBFracing
 
-默认配置已整合最新带线性阻力的五门预览方案。源代码只导入本目录模块和requirements.txt中的第三方库，可将整个目录复制到其他位置；模型和旧结果保持原样。
+穿越点网络和时间网络生成五门参考，完整刚体 MPCC 使用学习 CBF 进行避碰。根目录的 train.py 和 validate.py 包含完整参数解析及主流程。
 
-## 从这里开始
+## 运行
 
-在本目录创建Python 3.12环境并安装requirements.txt，然后运行：
+在项目目录安装依赖，每次使用新的输出名称。
 
 ```powershell
-python selfcheck.py
-python -m unittest test_cli_branches -v
-python validate.py --name demo_new
-python render.py outputs/demo_new
-python integration_report.py outputs/demo_new
+python -m pip install -r requirements.txt
+
+# 默认使用 Minimum Snap + 学习时间分配 + 凝聚 DAQP SQP-RTI
+python validate.py --name snap_demo
+
+# 显式选择前端及自训练时间检查点
+python validate.py --name snap_custom --frontend minimum-snap --event-checkpoint models/my_times/events.pt
+
+# 原有自由时间 phase 前端及原始互补 CPC
+python validate.py --name phase_demo --frontend phase --start-mode gate1_aligned
+python validate.py --name original_demo --frontend original --preview-gates 2 --mpcc-backend ipopt
+
+# 完整审计、动图和速度曲线
+python -m cbfracing.evaluation.integration_report outputs/snap_demo
+python -m cbfracing.evaluation.render outputs/snap_demo
 ```
 
-输出名必须是新名字。validate.py默认选择学习CBF、5个后续物理航门、phase前端、C2参考、进度奖励220；每机通过14个门后结束。结果目录包含实际状态、控制、逐次规划、全部日志、动图、速度曲线及独立审计。
+全部参数见 python validate.py --help。默认前端已选为新整合的 minimum-snap，保留 phase 和 original 命令行分支。Minimum Snap 默认载入 models/snap_short_residual_v2/events.pt，采用对准一号门的静止起点、进度奖励4200、弯道奖励900。--start-mode original 可以选择原始起点。phase 默认采用原始起点和220进度奖励。
 
-## 参数来源
+RTI 使用缓存编译导数、动力学凝聚和 DAQP，最多16次更新，正则系数0.1，保留物理过门约束。前3个预测区间细分检查过门交点。Minimum Snap 分支直接使用RTI冷启动，phase和original分支首次由IPOPT初始化。可用 --rti-cold-start 或 --no-rti-cold-start 显式选择。
 
-config.json统一提供无人机参数和online_planning默认设置，CLI参数优先于默认设置。
+--rti-kernels auto 根据问题哈希加载 build/fast_physical_cross_dense.dll。改变预测长度、CBF模型或约束后，哈希不匹配会使用符号导数，并记录原因。--rti-kernels native 要求编译内核精确匹配，--rti-kernels symbolic 使用符号计算。提供的DLL对应Windows和当前CasADi配置。本机 .deps/ 包含DAQP 0.11.0的Python 3.12 Windows扩展，其他环境通过requirements.txt安装依赖。
 
-|物理参数|当前值|
+实际20 ms执行区间通过非线性核验后施加控制，完整预测残差另外记录。求解失败后允许一次计入耗时的SQP可行性恢复，可用 --no-sqp-recovery 关闭。
+
+## 时间网络训练
+
+```powershell
+# 从头监督训练五事件时间网络
+python train.py --task time --frontend minimum-snap --name my_times --steps 2000
+
+# 复现昨晚的短航段残差训练，冻结基础时间网络
+python train.py --task time --frontend minimum-snap --architecture short --name my_short_times --log-bound .3 --steps 2000
+
+# 使用自己整理的真实滚动数据
+python train.py --task time --name custom_times --dataset data/custom_events.npz --steps 3000
+
+# 穿越点和CBF训练
+python train.py --name allocation_scratch --steps 2500
+python train.py --task cbf --name custom_h --steps 4000
+```
+
+时间训练默认使用data/events_rollout.npz，包含60个训练样本和20个验证样本，按飞行运行划分。标签来自已核验轨迹的后续实际过门间隔。每个样本有54维状态与五门几何特征，以及5个正航段时长。自建npz需包含features[N,54]、targets[N,5]、train和val索引，两个索引集合应互斥。同一运行的样本应放在同一集合。
+
+direct架构从头训练全部时间网络参数。short架构冻结models/snap_bounded_rollout_v1/events.pt，训练距离小于3 m的航段残差，修正比例约束在exp(±log_bound)内。输出保存到models/<name>/events.pt和training.json，随后通过--event-checkpoint调用。训练验证误差与完整闭环性能分别核验。
+
+## 文件布局
+
+|位置|内容|
 |---|---|
-|质量|0.85 kg|
-|臂长|0.15 m|
-|惯量|diag(0.0025, 0.0021, 0.0043) kg m²|
-|单旋翼推力|0–7 N|
-|力矩系数|0.022|
-|角速度约束|欧氏范数不超过10 rad/s|
-|机体系线性阻力|diag(0.26, 0.28, 0.42) kg/s|
-|平移速度上限|无|
+|train.py|完整训练参数解析与分支选择、穿越点训练流程|
+|validate.py|完整闭环参数解析、规划与控制执行流程|
+|cbfracing/core/|动力学、赛道、配置及运行参数配置|
+|cbfracing/networks/|穿越点、时间分配、学习CBF网络|
+|cbfracing/planning/|Minimum Snap、phase、互补CPC、空间参考及初值|
+|cbfracing/control/|MPCC问题、RTI、DAQP凝聚QP、邻机预测|
+|cbfracing/training/|时间网络和CBF训练|
+|cbfracing/evaluation/|物理与网络核验、绘图、结果报告|
+|cbfracing/tools/|导数内核编译及给定样本的数值核验|
+|models/、data/|检查点及训练数据|
+|build/|与问题哈希绑定的编译内核|
+|outputs/、results/|历史及新运行的独立结果|
 
-阻力加速度为 `-R D Rᵀ v / m`，前端、MPCC预测及执行使用同一物理模型。当前未加入外部风速。角速度约束保持范数形式。
+每次运行保存实际状态、控制、逐次求解日志、前端规划数据及递归源码快照。已有检查点与历史结果保留。新增模型、数据和内核的来源记录在INTEGRATION_20261105.json。
 
-默认MPCC为20×0.08=1.6秒，反馈间隔0.02秒。进度奖励220、滞后误差权重10000、推力变化权重0.05、虚拟进度加速度权重2。学习CBF的alpha=3，h及离散下降率均为预测硬约束。
+## 整合验证
 
-## 五门滚动规划
+outputs/integration_snap_full_20261105/完成双机各两圈14门，峰值19.0116 m/s，两机第二圈5.9035/5.9098 s。执行数组与实验区推荐版本逐元素一致，物理、实际采样CBF及分配网络核验通过。该次MPCC中位/P95为24.93/53.29 ms，参考生成29次合计0.4461 s。
 
-每架无人机观测本机状态、邻机位置速度和航门几何。冻结共享网络针对每个预览门分别输出横向穿越点偏移，范围为±0.45m；网络结构没有扩大，也没有增加额外空间航路点。时间网络为前两门提供初始猜测，其余门按距离构造初值，随后由数值前端优化时长和完整刚体轨迹。
+在本项目重新训练2000步短航段残差后，outputs/integration_trained_time_20261105/再次完成同一轨迹。实际计时受机器负载影响。
 
-默认phase前端将各物理航门放在各航段末端的固定网格节点，优化各航段时长。每通过当前门即用真实当前状态重规划；5门预览没有改变MPCC的1.6秒预测时域。仅最开始静止，滚动时不重置物理状态，也没有末端静止等式。
+phase分支在对准一号门的起点完成了双机单门调用检查。原始起点配合本次RTI配置的两次测试在约0.7 s处求解失败，保留在outputs/integration_phase_smoke_20261105/与outputs/integration_phase_initialized_20261105/。完整两圈通过范围目前为上述Minimum Snap配置。
 
-C2参考、最多两次内部参考更新、物理门平面交点约束与最新实验保持一致。前端没有机间CBF，学习CBF位于MPCC中；邻机预测来自当前及历史观测，不交换未来轨迹，没有显式等待或优先级规则。
+固定时长的Minimum Snap为运动学凸QP，完整MPCC包含非线性刚体动力学。预测采用20×0.08 s时域，每0.02 s执行一次。初始状态仅首次静止，后续携带实际状态，邻机预测基于当前与历史观测。前3个预测区间施加硬CBF下降率约束，后续使用惩罚，h的非负约束覆盖预测时域。
 
-保留原始互补CPC，可显式选择两门版本：
-
-```powershell
-python validate.py --name original_two_gate --frontend original --preview-gates 2 --preview-spline hermite --reference-refine 0 --progress 80 --no-physical-gate-guard
-```
-
-原始互补CPC同时优化总时间和事件进度，保留两门参数化；phase支持可配置多门预览。五门phase结果按其实际事件参数化报告。两个前端共享当前带阻力动力学。
-
-## 解析与学习CBF分支
-
-```powershell
-# 当前默认：直接输出学习CBF
-python validate.py --name learned_demo --cbf learned
-
-# 保留解析距离CBF入口
-python validate.py --name analytic_demo --cbf analytic
-
-# 更换学习CBF或修改预览数量
-python validate.py --name custom_demo --cbf learned --cbf-checkpoint models/my_h/h.pt --preview-gates 3
-```
-
-学习分支使用models/direct_cbf_v2/h.pt，结构22→32→16→1 Tanh，直接输出完整hθ，没有可学习的额外裕度。硬约束为hθ[k]≥0和hθ[k+1]≥exp(-3×0.08)hθ[k]。解析分支保留距离硬约束及软下降率惩罚。显式CLI选项优先于分支设置。
-
-## 训练和主要入口
-
-```powershell
-python train.py --name scratch_s31 --seed 31 --steps 2500
-python train.py --task cbf --name new_h --seed 7 --steps 4000
-```
-
-航门分配训练沿用无穿越点标签的几何代理损失；本次整合没有重新训练任何checkpoint。CBF默认读取附带冻结数据集，若物理条件或任务分布明显改变，需要另行采样及闭环验证。
-
-|文件|作用|
-|---|---|
-|config.json / model.py|物理参数、阻力、默认规划配置及动力学|
-|validate.py / cli_profiles.py|闭环执行、CLI覆盖及CBF分支|
-|planning.py / phase_planner.py|滚动门内分配、可配置预览与自由航段时长规划|
-|original_cpc.py|原始互补CPC前端|
-|controller.py / reference.py|MPCC、CBF、物理门交点检查和空间参考|
-|train.py / allocation.py|航门穿越点分配训练及共享网络|
-|safety_train.py / barrier.py|直接安全函数训练及符号导出|
-|integration_report.py|物理/CBF/分配核验与中文结果页|
-|audit.py / audit_neural.py / verify_policy.py|独立物理回放、实际h/下降率和逐门网络重算|
-|render.py|实际轨迹动图、完整速度曲线及PNG/PDF/SVG|
-|selfcheck.py / test_cli_branches.py|本地模块与模型哈希、局部导数、动力学及配置回归|
-
-verify_policy.py分别核验phase固定事件网格和original互补事件编码。audit.py使用每次运行保存的动力学参数回放历史结果，避免用新阻力核验旧零阻力轨迹。学习屏障值、离散下降率与物理避碰分别报告。
-
-## 结果记录
-
-本次完整整合验证保存于outputs/integrated_drag_preview5_mu220_20261102/。完成后打开该目录index.html，查看实际两圈结果、动图、速度和全部审计。
-
-results/example_seed31及此前outputs下结果属于各自旧配置，保留用于追溯，不作为当前默认配置的测试结果。PROVENANCE.json保存冻结模型哈希，checks保存本次模型一致性、入口和历史回放检查。
-
-所有飞行时长均为仿真物理时间，计算耗时单独记录且没有推进飞行。本项目当前为完整非线性数值验证后端，不宣称实时部署、跨场景泛化或全局时间最优。实际CBF采样检查不构成连续时间不变集证明。
+计算延迟单独统计，尚未推进物理仿真。上述计时与采样核验分别限定于当前测试的计算性能和安全性。

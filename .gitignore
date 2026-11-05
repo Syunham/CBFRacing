@@ -1,11 +1,13 @@
 .venv/
 __pycache__/
 *.pyc
+.deps/
 outputs/
 data/*
 !data/direct_dataset_v1.npz
 !data/direct_dataset_v2.npz
 !data/manifest_v1.json
 !data/manifest_v2.json
+!data/events_rollout.npz
 models/from_scratch/
 models/integration_*/

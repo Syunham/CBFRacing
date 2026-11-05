@@ -1,0 +1,141 @@
+{
+  "source": "D:\\semixcode\\20261008new\\minimum_snap_times_20261105",
+  "execution_maximum_differences": {
+    "imported_checkpoint": 0.0,
+    "retrained_checkpoint": 0.0
+  },
+  "imported_files": {
+    "models/snap_short_residual_v2/events.pt": "61eace8d55c19606f01af9ac01feb1f39cc6db2159f4aa7b2212533fee327346",
+    "models/snap_bounded_rollout_v1/events.pt": "ce4a96f70b9acf7fbcbdbd807bbb1540b492461bbf9317967f2dbcffed9a2c73",
+    "data/events_rollout.npz": "9e993c1f022eb7e7466412658b3724130f7c2cb253a27e6a8fb9ea47f7de0964",
+    "build/fast_physical_cross_dense.dll": "ed2576c3b0d9a657cd0c5cc29aac47d86edd77a01b6398e0eaa79c0d117891ea",
+    "build/fast_physical_cross_dense_compile.json": "577de9f50ccb858018cfb692362c898017774b8d38c91d782f71166f8329c445"
+  },
+  "source_hashes": {
+    "train.py": "58383ba07eee8b750a6a263ddbd2e9eb8e92fad0e234a6d4bb5bda4286cfc80b",
+    "validate.py": "d8ae34d9b651096cdc38a8799e84661a525ae8a7d7b29470761322152fe3dec0",
+    "cbfracing\\__init__.py": "79373d6620bbcd95add432e8f9da162b7871d78c773f21ad3f2b72beb4d3a264",
+    "cbfracing\\control\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cbfracing\\control\\controller.py": "ce70f21d80d96daac15bc8f2f11bfc717584e45cece5e33998a342858c64cfd5",
+    "cbfracing\\control\\neighbor_prediction.py": "34fc29d5b6168a886a9e8b80c9c76313b70f50ac99b94c96af77e1b8b8ac8dd5",
+    "cbfracing\\control\\online_rti.py": "1984c6dc42e0acce888ef655bb111426659fc2bb24ae4d7b0fef6534c8939a28",
+    "cbfracing\\control\\qp_backends.py": "33c93930b912e56a20006137ae5c7604d56f084a1ec70f26f980fcd7abf1a7b3",
+    "cbfracing\\control\\rti.py": "0a97b6882dc716b381a56a15ae55989c2ecec615700aa3f115f1315034a8975c",
+    "cbfracing\\control\\rti_problem.py": "b216eee8c3ea053f50d0f936d9809f2969c7b83d984524765299f028b2e6c8c6",
+    "cbfracing\\core\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cbfracing\\core\\cli_profiles.py": "ada4f4b4391a335a1784636c1b2083f714e0c16db627f5654ebb79d3ac0ba1ee",
+    "cbfracing\\core\\context.py": "a04b86d44787809620b850e1034193d77774988909b9da19c59b91b5aca2ca8c",
+    "cbfracing\\core\\model.py": "8c566af98d43009514a9322beb30db63e0e703deaa0d364790a69ddc4d35a0cb",
+    "cbfracing\\core\\runtime.py": "5299bc76bdbf8603d0da0116b81a63800755c9f3289e8ef0ae6bb2cc2ebe0378",
+    "cbfracing\\evaluation\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cbfracing\\evaluation\\audit.py": "5fa1ec1bd8b7c681d626a80e81dfdf2dc5f63898e4266b446e5c26e999bcb69d",
+    "cbfracing\\evaluation\\audit_neural.py": "5a7b28475a736baeaa4ee8ecdf946dcbb30628e5cdcfbaf02b4c3aa10a833392",
+    "cbfracing\\evaluation\\integration_report.py": "5432e67176e93bfac851c7a2d174f631b7dac1144840e4cb6bf77b45564a92b5",
+    "cbfracing\\evaluation\\render.py": "839521b2a719bd481b9e6ca681b8b0fd7c7fdecdafd1b7151b85fe7dd8174ec4",
+    "cbfracing\\evaluation\\verify_policy.py": "5839657bd31739c1d7cf65b73faf5b941ae3124cf43aebdb4bb4b5079c7a3fa6",
+    "cbfracing\\networks\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cbfracing\\networks\\allocation.py": "7044660c0f2a166c2ef07ba0946ed96489a50ff1f2c0c02d4b4d5edbc0593e0d",
+    "cbfracing\\networks\\barrier.py": "d314bd55e1493a4008136821cbe9892b9c98639d8e498fe98e88d40ca3c983cf",
+    "cbfracing\\networks\\event_supervised.py": "4a7f0562d8ba32b5ddb5a4852744b2d8f5592b1f9c6792b3fa61b722af813321",
+    "cbfracing\\networks\\timing.py": "9c98a63324e9ed65ce7758673c5dd98dca19332df00e334e7e1fd8a6914f6316",
+    "cbfracing\\planning\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cbfracing\\planning\\minimum_snap.py": "dfb3de378829813602be64e65b15d2ae582ba1038711b30e392548c2c8661bd9",
+    "cbfracing\\planning\\original_cpc.py": "92f70d95ed53d2c68ac134aeeea807382a2e30ef286b73e16b93220ae6da764a",
+    "cbfracing\\planning\\phase_planner.py": "95e2b87370e48c89416821e6f9d0c23595b3c83df2208f11b26ef9abb04d73f6",
+    "cbfracing\\planning\\planning.py": "f9034dee5d8bb331a83d4704d0475f9f7adb1be107a3cb11cf7d5b6674f92cc7",
+    "cbfracing\\planning\\reference.py": "e676ba81bdb5f7fd53f57d1ff23bb8fbdf2249c698271696d719105b4866c625",
+    "cbfracing\\planning\\seed.py": "30a91ab0d63daae951439a8684713561d8a1f19aae4594575378803b16c333ec",
+    "cbfracing\\planning\\warm_seed.py": "0645bf4b2c6a6c50c4d3e1ddf9eb029fecd1668d092f0c80c70ebfa372a884fe",
+    "cbfracing\\tools\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cbfracing\\tools\\compile_fast.py": "3c3674f90a2528c43b7b860757ab714bfaa056cb25c5249cdb8f70448fdc8bfb",
+    "cbfracing\\training\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cbfracing\\training\\events.py": "33cba1bf168fbf0ff5bd63cfe002a790e0c66f60e2ac84c94f5c916b995222bc",
+    "cbfracing\\training\\safety_train.py": "6351dc4a0bcc8b1ac4035f05598e04c55254b7814b39268efb36978f8fa21794"
+  },
+  "training_data_scope": "60 training and 20 validation rolling states, held-out run split, actual subsequent gate intervals",
+  "validated_runs": {
+    "integration_snap_full_20261105": {
+      "summary": {
+        "success": true,
+        "gates_passed": [
+          14,
+          14
+        ],
+        "target_per_agent": 14,
+        "duration": 12.479999999999823,
+        "stop_reason": "completed",
+        "min_distance": 1.0151596276355344,
+        "controller_p50_ms": 24.92809999966994,
+        "controller_p95_ms": 53.2887199973629,
+        "frontend_seconds": 0.4460512000223389,
+        "frontend_queries": 29,
+        "max_speed": 19.01163337872483,
+        "manual_waiting": false,
+        "expert_fallbacks": 0,
+        "physical_latency_simulated": false,
+        "controller_construction_seconds": 7.007073699991452,
+        "planner_construction_seconds": 0.028868199995486066,
+        "deferred_plan_artifact_seconds": 0.06239619999541901
+      },
+      "lap_times": [
+        [
+          6.259595754146531,
+          5.903543475866192
+        ],
+        [
+          6.558775000572153,
+          5.909840848445768
+        ]
+      ],
+      "physical_and_cbf_passed": true,
+      "time_network_verified": true,
+      "failed_qps": 0,
+      "recoveries": 0
+    },
+    "integration_trained_time_20261105": {
+      "summary": {
+        "success": true,
+        "gates_passed": [
+          14,
+          14
+        ],
+        "target_per_agent": 14,
+        "duration": 12.479999999999823,
+        "stop_reason": "completed",
+        "min_distance": 1.0151596276355344,
+        "controller_p50_ms": 25.468699997873046,
+        "controller_p95_ms": 52.32007499143947,
+        "frontend_seconds": 0.4878909999533789,
+        "frontend_queries": 29,
+        "max_speed": 19.01163337872483,
+        "manual_waiting": false,
+        "expert_fallbacks": 0,
+        "physical_latency_simulated": false,
+        "controller_construction_seconds": 6.639126699999906,
+        "planner_construction_seconds": 0.01684430000022985,
+        "deferred_plan_artifact_seconds": 0.07145080000918824
+      },
+      "lap_times": [
+        [
+          6.259595754146531,
+          5.903543475866192
+        ],
+        [
+          6.558775000572153,
+          5.909840848445768
+        ]
+      ],
+      "physical_and_cbf_passed": true,
+      "time_network_verified": true,
+      "failed_qps": 0,
+      "recoveries": 0
+    }
+  },
+  "negative_runs": [
+    "integration_snap_20261105: missing DAQP dependency, fixed before completed runs",
+    "integration_phase_smoke_20261105: original start, cold RTI, failed at 0.72s",
+    "integration_phase_initialized_20261105: original start, initial IPOPT, failed at 0.70s"
+  ],
+  "phase_scope": "integration_phase_aligned_20261105 passed one gate for both agents; original-start phase RTI remains unsuccessful",
+  "platform": "Supplied DLL and bundled DAQP extension verified on Windows x64, Python 3.12"
+}

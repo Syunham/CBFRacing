@@ -1,0 +1,16 @@
+{
+  "key": "f19c911dff4b20f72e98",
+  "command": [
+    "D:\\mingw64\\bin\\gcc.EXE",
+    "-O1",
+    "-shared",
+    "-o",
+    "D:\\semixcode\\20261008new\\20261029CBFracing\\build\\rti_f19c911dff4b20f72e98.dll",
+    "D:\\semixcode\\20261008new\\20261029CBFracing\\build\\rti_f19c911dff4b20f72e98.c",
+    "-lm"
+  ],
+  "returncode": 1,
+  "seconds": 213.1806054000008,
+  "stdout": "",
+  "stderr": "gcc.EXE: fatal error: cannot execute 'D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/12.2.0/../../../../x86_64-w64-mingw32/bin/as.exe': CreateProcess: No such file or directory\ncompilation terminated.\n"
+}
