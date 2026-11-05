@@ -1,85 +1,198 @@
 # CBFracing
 
-穿越点网络和时间网络生成五门参考，完整刚体 MPCC 使用学习 CBF 进行避碰。根目录的 train.py 和 validate.py 包含完整参数解析及主流程。
+CBFracing combines learned gate-passage allocation, learned segment durations, polynomial reference planning, and nonlinear model predictive contouring control (MPCC) with a learned control barrier function (CBF). The current default configuration uses a five-gate Minimum Snap reference planner and a condensed DAQP solver for SQP-RTI updates.
 
-## 运行
+## Method
 
-在项目目录安装依赖，每次使用新的输出名称。
+Each quadrotor observes its own state, the gate geometry, and the current position and velocity of its neighbor. Both vehicles use shared network parameters and independently construct their references. Neighbor motion is predicted from current and historical observations. Planning proceeds on a common physical time grid, and each vehicle replans after passing its current gate.
+
+The implementation uses state observations in simulation. Each reference contains five physical gate events, with the first gate serving as the current passage target. Vehicle motion continues through subsequent planning calls using the measured state. Only the initial takeoff state is stationary.
+
+```mermaid
+flowchart TD
+    O[Own state, neighbor position and velocity, gate geometry]
+    O --> A[Shared antisymmetric passage-point network]
+    A --> G[Five gate passage regions]
+    O --> T[Own-state and five-gate timing features]
+    G --> T
+    T --> E[Learned five-segment duration policy]
+    G --> Q[Fixed-duration Minimum Snap QP]
+    E --> Q
+    Q --> R[Arc-length reference curve]
+    R --> M[Nonlinear MPCC with condensed DAQP SQP-RTI]
+    O --> H[Direct scalar CBF network]
+    H --> M
+    M --> F[Execute 20 ms and update observations]
+    F --> O
+```
+
+### Passage-point network
+
+The passage allocator takes 24 normalized features. Six describe relative position and velocity in gate-related coordinates. The remaining features describe the gate relative to the pair midpoint, mean velocity, gate normal and lateral axis, and the following gate geometry.
+
+A shared MLP has dimensions `24 → 48 → 48 → 1`, with Tanh hidden activations. It is evaluated on the original features and on features with the six relative components negated. Its output is
+
+\[
+o_\phi(z)=0.45\tanh\!\left(f_\phi(z)-f_\phi(\mathcal Rz)\right).
+\]
+
+The resulting lateral offset lies within ±0.45 m. For gate center \(g_j\) and lateral axis \(a_j\), the predicted passage point is \(g_j+o_\phi(z_j)a_j\). The antisymmetric construction gives opposite offsets when the relative features are reversed and the common features agree. A private passage memory limits updates to overlapping future gate offsets to 0.2 m per successful replan in the default configuration.
+
+The allocator is trained using collision, crossing, motion, and offset losses evaluated on a differentiable trajectory surrogate. The current default uses the saved checkpoint in `models/allocation.pt`. The implementation is in [allocation.py](cbfracing/networks/allocation.py) and [train.py](train.py).
+
+### Time-allocation network
+
+The default timing policy receives 54 features from the own-vehicle state and the five predicted passage regions. These comprise position, velocity, quaternion, body rates, relative gate positions, gate normals, passage half-widths, and normalized collective thrust.
+
+|Component|Architecture|Role|
+|---|---|---|
+|Base time policy|54 → 128 → 128 → 64 → 5|Predicts normalized log durations|
+|Bounded residual|54 → 64 → 5|Applies a bounded multiplicative correction to the frozen base policy|
+|Short-segment residual|54 → 32 → 5|Adjusts segments whose geometric distance is below 3 m|
+
+Hidden layers use Tanh. The residual heads have bounded Tanh outputs. The final short-segment policy follows
+
+\[
+\log T_j=\log T_{\mathrm{bounded},j}
++m_j b\tanh r_j(z),
+\qquad
+m_j=\mathbf 1[d_j<3\,\mathrm m],
+\]
+
+with \(b=0.3\) for the integrated checkpoint. Durations are clamped to [0.15, 8] s. The default checkpoint is `models/snap_short_residual_v2/events.pt`.
+
+Timing supervision uses subsequent executed gate intervals from audited rolling flights. The bundled dataset contains 60 training and 20 validation examples, split by complete flight run. The short-residual training objective combines masked log-duration regression with a 0.02-weighted anchor to the frozen policy. The integrated trainer also supports a direct time MLP initialized from scratch. Network definitions and the training procedure are in [event_supervised.py](cbfracing/networks/event_supervised.py) and [events.py](cbfracing/training/events.py).
+
+### Minimum Snap reference generation
+
+The planner represents each of the five segments with a seventh-degree Bernstein polynomial and minimizes
+
+\[
+\min_c\ \sum_{j=1}^{5}\int_0^{T_j}
+\left\|p_j^{(4)}(t)\right\|^2\,dt.
+\]
+
+The predicted durations are fixed during this solve. Constraints connect the initial position, velocity, and acceleration to the measured state, preserve position through jerk continuity across segments, enforce gate passage regions and forward passage velocity, and bound sampled positions within the world. The default configuration also matches the initial jerk components transverse to the current thrust axis.
+
+With fixed durations, the default kinematic problem is a convex QP solved by Clarabel. The resulting position samples are converted into an arc-length reference for MPCC. Full rigid-body constraints are enforced by the downstream controller and checked on executed trajectories. The implementation is in [minimum_snap.py](cbfracing/planning/minimum_snap.py) and [reference.py](cbfracing/planning/reference.py).
+
+### Learned CBF and MPCC
+
+The CBF network receives 22 normalized features consisting of relative position and velocity, own velocity, attitude, body rates, rotor thrusts, pair distance, and radial relative velocity. A `22 → 32 → 16 → 1` Tanh MLP directly predicts a scalar \(h_\psi\). Its checkpoint is `models/direct_cbf_v2/h.pt`. Training includes safe/unsafe classification, a derivative-condition loss, and a scale-fitting term. The differentiable scalar is exported into the MPCC formulation. The implementation is in [barrier.py](cbfracing/networks/barrier.py) and [safety_train.py](cbfracing/training/safety_train.py).
+
+MPCC carries a 19-dimensional state containing position, velocity, quaternion, body rates, four rotor thrusts, virtual path progress, and virtual progress speed. Controls are the four thrust derivatives and virtual progress acceleration. Its objective combines contour and lag errors, control regularization, and progress reward. The default progress coefficient reaches 4200 and is limited toward 900 in curved reference sections. A reference-speed preview further modulates this coefficient.
+
+The controller imposes rigid-body dynamics, actuator and body-rate limits, spatial bounds, physical gate-crossing constraints, and learned-CBF constraints. It requires \(h_k\geq0\) throughout the prediction horizon. For the first three prediction intervals, the default hard decay condition is
+
+\[
+h_{k+1}-e^{-3\Delta t}h_k\geq \rho\Delta t,
+\qquad \rho=0.04\,\mathrm{s}^{-1}.
+\]
+
+Later decay violations receive a penalty. The applied control interval has additional dense checks. The margin \(\rho\) is a configured robustness term. Actual simultaneous-vehicle trajectories are independently checked against the original sampled CBF decay condition.
+
+The prediction horizon is 20 × 0.08 s, and the feedback interval is 0.02 s. The first three prediction intervals use four subsegments for gate-intersection checks. SQP-RTI uses compiled derivative kernels, Gauss–Newton curvature, dynamics condensing, and DAQP, with up to 16 updates per call. Applied-interval nonlinear feasibility determines control acceptance, while full-horizon residuals are separately logged. An optional SQP restoration is counted in the reported runtime. The implementation is in [control/](cbfracing/control/).
+
+## Installation and execution
+
+Run commands from the project directory and use a new output name for each run.
 
 ```powershell
 python -m pip install -r requirements.txt
 
-# 默认使用 Minimum Snap + 学习时间分配 + 凝聚 DAQP SQP-RTI
+# Default learned-time Minimum Snap reference and RTI MPCC
 python validate.py --name snap_demo
 
-# 显式选择前端及自训练时间检查点
-python validate.py --name snap_custom --frontend minimum-snap --event-checkpoint models/my_times/events.pt
+# Select the branch and a custom timing checkpoint
+python validate.py --name custom_demo --frontend minimum-snap --event-checkpoint models/my_times/events.pt
 
-# 原有自由时间 phase 前端及原始互补 CPC
-python validate.py --name phase_demo --frontend phase --start-mode gate1_aligned
-python validate.py --name original_demo --frontend original --preview-gates 2 --mpcc-backend ipopt
+# Inspect available options
+python validate.py --help
 
-# 完整审计、动图和速度曲线
+# Audit the executed flight and generate its animation
 python -m cbfracing.evaluation.integration_report outputs/snap_demo
 python -m cbfracing.evaluation.render outputs/snap_demo
 ```
 
-全部参数见 python validate.py --help。默认前端已选为新整合的 minimum-snap，保留 phase 和 original 命令行分支。Minimum Snap 默认载入 models/snap_short_residual_v2/events.pt，采用对准一号门的静止起点、进度奖励4200、弯道奖励900。--start-mode original 可以选择原始起点。phase 默认采用原始起点和220进度奖励。
+`--rti-kernels auto` loads the compiled kernel when its problem hash matches. Otherwise, symbolic derivatives are selected and the reason is recorded. `--rti-kernels native` requires a matching native kernel, and `--rti-kernels symbolic` selects symbolic evaluation. The supplied DLL was verified on Windows x64 with the current CasADi configuration. The local DAQP extension targets Python 3.12 on Windows. Other environments can install DAQP through `requirements.txt`.
 
-RTI 使用缓存编译导数、动力学凝聚和 DAQP，最多16次更新，正则系数0.1，保留物理过门约束。前3个预测区间细分检查过门交点。Minimum Snap 分支直接使用RTI冷启动，phase和original分支首次由IPOPT初始化。可用 --rti-cold-start 或 --no-rti-cold-start 显式选择。
+The default Minimum Snap start is aligned with Gate 1. `--start-mode original` selects the original supplied start. The alternative planning branches remain available through `--frontend phase` and `--frontend original`. The original complementarity CPC requires `--preview-gates 2`. IPOPT MPCC can be selected with `--mpcc-backend ipopt`.
 
---rti-kernels auto 根据问题哈希加载 build/fast_physical_cross_dense.dll。改变预测长度、CBF模型或约束后，哈希不匹配会使用符号导数，并记录原因。--rti-kernels native 要求编译内核精确匹配，--rti-kernels symbolic 使用符号计算。提供的DLL对应Windows和当前CasADi配置。本机 .deps/ 包含DAQP 0.11.0的Python 3.12 Windows扩展，其他环境通过requirements.txt安装依赖。
-
-实际20 ms执行区间通过非线性核验后施加控制，完整预测残差另外记录。求解失败后允许一次计入耗时的SQP可行性恢复，可用 --no-sqp-recovery 关闭。
-
-## 时间网络训练
+## Training
 
 ```powershell
-# 从头监督训练五事件时间网络
+# Train a direct five-event time policy from scratch
 python train.py --task time --frontend minimum-snap --name my_times --steps 2000
 
-# 复现昨晚的短航段残差训练，冻结基础时间网络
-python train.py --task time --frontend minimum-snap --architecture short --name my_short_times --log-bound .3 --steps 2000
+# Train the bounded short-segment residual used by the current approach
+python train.py --task time --architecture short --name my_short_times --log-bound .3 --steps 2000
 
-# 使用自己整理的真实滚动数据
+# Supply a custom timing dataset
 python train.py --task time --name custom_times --dataset data/custom_events.npz --steps 3000
 
-# 穿越点和CBF训练
-python train.py --name allocation_scratch --steps 2500
-python train.py --task cbf --name custom_h --steps 4000
+# Train the passage allocator or direct scalar CBF
+python train.py --name my_allocator --steps 2500
+python train.py --task cbf --name my_cbf --steps 4000
 ```
 
-时间训练默认使用data/events_rollout.npz，包含60个训练样本和20个验证样本，按飞行运行划分。标签来自已核验轨迹的后续实际过门间隔。每个样本有54维状态与五门几何特征，以及5个正航段时长。自建npz需包含features[N,54]、targets[N,5]、train和val索引，两个索引集合应互斥。同一运行的样本应放在同一集合。
+Timing datasets contain `features[N,54]`, positive `targets[N,5]`, and disjoint `train` and `val` index arrays. Group samples from the same flight into the same split. The default data file is `data/events_rollout.npz`. Training writes `events.pt` and `training.json` to `models/<name>/`. The `short` architecture freezes the bounded base checkpoint, and its `--initial` option selects that checkpoint. The direct architecture trains all time-policy parameters.
 
-direct架构从头训练全部时间网络参数。short架构冻结models/snap_bounded_rollout_v1/events.pt，训练距离小于3 m的航段残差，修正比例约束在exp(±log_bound)内。输出保存到models/<name>/events.pt和training.json，随后通过--event-checkpoint调用。训练验证误差与完整闭环性能分别核验。
+## Results
 
-## 文件布局
+All runs below use the original-scale Split-S course, two quadrotors, two laps per vehicle, five-gate rolling previews, and a stationary initial state aligned with Gate 1. The physical model uses mass 0.85 kg, per-rotor thrust bounds of 0–7 N, body-rate norm limit 10 rad/s, and body-frame linear drag coefficients [0.26, 0.28, 0.42] kg/s. Gate dimensions are 0.4 × 1.5 × 1.5 m. Translational speed is unconstrained.
 
-|位置|内容|
+### Experimental separation sweep
+
+The following runs use the integrated 900-turn-reward configuration. Lap times in the table refer to the second lap.
+
+|Initial separation|UAV 1 lap time|UAV 2 lap time|Peak speed across both UAVs|Failed QPs / restorations|
+|---|---|---|---|---|
+|1.2 m|5.8997 s|5.9186 s|18.7628 m/s|0 / 0|
+|1.3 m|5.9035 s|5.9098 s|19.0116 m/s|0 / 0|
+|1.4 m|5.9182 s|6.0080 s|18.9391 m/s|0 / 0|
+
+Each run completed 14 ordered gate crossings per vehicle and passed the physical and actual sampled-CBF audits. First-lap times, which include acceleration from rest, span approximately 6.26–6.56 s. Full metrics and experiment identifiers are recorded in the [experimental report](../minimum_snap_times_20261105/DENSE_GATE_ITERATION.md).
+
+### Validation inside CBFracing
+
+`outputs/integration_snap_full_20261105/` reproduces the 1.3 m experiment with elementwise-identical executed states. Retraining the short-segment residual for 2000 steps inside this project and loading the resulting checkpoint reproduced the same flight in `outputs/integration_trained_time_20261105/`.
+
+|Metric|Integrated validation|
 |---|---|
-|train.py|完整训练参数解析与分支选择、穿越点训练流程|
-|validate.py|完整闭环参数解析、规划与控制执行流程|
-|cbfracing/core/|动力学、赛道、配置及运行参数配置|
-|cbfracing/networks/|穿越点、时间分配、学习CBF网络|
-|cbfracing/planning/|Minimum Snap、phase、互补CPC、空间参考及初值|
-|cbfracing/control/|MPCC问题、RTI、DAQP凝聚QP、邻机预测|
-|cbfracing/training/|时间网络和CBF训练|
-|cbfracing/evaluation/|物理与网络核验、绘图、结果报告|
-|cbfracing/tools/|导数内核编译及给定样本的数值核验|
-|models/、data/|检查点及训练数据|
-|build/|与问题哈希绑定的编译内核|
-|outputs/、results/|历史及新运行的独立结果|
+|Gate crossings per UAV|14 / 14|
+|Total simulated flight duration|12.48 s|
+|Peak speeds of UAV 1 / UAV 2|19.0116 / 18.6850 m/s|
+|Second-lap times of UAV 1 / UAV 2|5.9035 / 5.9098 s|
+|Dense minimum inter-vehicle distance|1.01516 m|
+|MPCC median / 95th-percentile runtime|24.93 / 53.29 ms|
+|Mean reference-generation runtime|15.38 ms across 29 calls|
+|Controller construction time|7.01 s|
+|Failed QPs / restorations|0 / 0|
+|Physical, CBF, passage-allocation and time-policy audits|Passed|
 
-每次运行保存实际状态、控制、逐次求解日志、前端规划数据及递归源码快照。已有检查点与历史结果保留。新增模型、数据和内核的来源记录在INTEGRATION_20261105.json。
+Timing values refer to this specific serial validation run. Computation latency is recorded separately from simulated physical time. The current measurements exceed the 20 ms feedback interval for some controller calls. Scope is limited to the evaluated course and initial conditions, with numerical replay and sampled safety checks.
 
-## 整合验证
+The 5.9 s goal remains unmet simultaneously for both vehicles across the separation sweep. A previous coarse-intersection variant achieved 5.8876/5.8863 s at 1.3 m separation, then failed at 1.4 m. The default uses the refined intersection formulation. For the legacy phase branch, the aligned-start single-gate check passed. Two original-start tests failed near 0.7 s, with logs retained in their output directories.
 
-outputs/integration_snap_full_20261105/完成双机各两圈14门，峰值19.0116 m/s，两机第二圈5.9035/5.9098 s。执行数组与实验区推荐版本逐元素一致，物理、实际采样CBF及分配网络核验通过。该次MPCC中位/P95为24.93/53.29 ms，参考生成29次合计0.4461 s。
+The fixed-duration reference QP is convex. Time-policy learning and the full MPCC problem retain their nonlinear structure. The current short-segment residual tends toward its lower bound, so the available experiments establish course-specific performance. Broader adaptation and generalization require additional data and evaluation.
 
-在本项目重新训练2000步短航段残差后，outputs/integration_trained_time_20261105/再次完成同一轨迹。实际计时受机器负载影响。
+The integrated report contains complete audits, and the animation includes executed paths and speed curves. File hashes and source provenance are recorded in the integration manifest. [Validation report](outputs/integration_snap_full_20261105/index.html) · [Integration manifest](INTEGRATION_20261105.json)
 
-phase分支在对准一号门的起点完成了双机单门调用检查。原始起点配合本次RTI配置的两次测试在约0.7 s处求解失败，保留在outputs/integration_phase_smoke_20261105/与outputs/integration_phase_initialized_20261105/。完整两圈通过范围目前为上述Minimum Snap配置。
+![Executed two-UAV flight and speed curves](outputs/integration_snap_full_20261105/rollout.gif)
 
-固定时长的Minimum Snap为运动学凸QP，完整MPCC包含非线性刚体动力学。预测采用20×0.08 s时域，每0.02 s执行一次。初始状态仅首次静止，后续携带实际状态，邻机预测基于当前与历史观测。前3个预测区间施加硬CBF下降率约束，后续使用惩罚，h的非负约束覆盖预测时域。
+## Code organization
 
-计算延迟单独统计，尚未推进物理仿真。上述计时与采样核验分别限定于当前测试的计算性能和安全性。
+|Location|Responsibility|
+|---|---|
+|`train.py`|Training arguments, task selection, passage-allocation training loop|
+|`validate.py`|Closed-loop arguments, planning, control execution, logging|
+|`cbfracing/core/`|Vehicle dynamics, course, configuration, runtime settings|
+|`cbfracing/networks/`|Passage allocator, duration policies, direct CBF|
+|`cbfracing/planning/`|Minimum Snap, phase planner, complementarity CPC, references, initial guesses|
+|`cbfracing/control/`|Nonlinear MPCC, SQP-RTI, QP condensing, DAQP, neighbor prediction|
+|`cbfracing/training/`|Timing-policy and CBF training procedures|
+|`cbfracing/evaluation/`|Physical replay, network verification, reports, animations|
+|`cbfracing/tools/`|Derivative-kernel compilation and numerical verification|
+|`models/`, `data/`|Saved checkpoints and training datasets|
+|`build/`|Compiled kernels and problem-hash metadata|
+|`outputs/`, `results/`|Per-run trajectories, controls, metrics, logs, source snapshots|
