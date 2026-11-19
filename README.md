@@ -2,6 +2,14 @@
 
 CBFracing combines learned gate-passage allocation, learned segment durations, polynomial reference planning, and nonlinear model predictive contouring control (MPCC) with a learned control barrier function (CBF). The current default configuration uses a five-gate Minimum Snap reference planner and a condensed DAQP solver for SQP-RTI updates.
 
+## AirSim360 two-lap replay
+
+![Split-S two-lap replay with chase, first-person RGB, and depth views](airsim360/reports/spatial_potential/cf21_fastfly_force_sync01/fastfly_two_laps.gif)
+
+Both drones clear all 14 gates in 12.82 s using Fast-fly, MPCC, and depth CBF-QP. The minimum center-to-center separation is 0.5719 m.
+
+[AirSim360 implementation and setup](airsim360/README.md)
+
 ## Method
 
 Each quadrotor observes its own state, the gate geometry, and the current position and velocity of its neighbor. Both vehicles use shared network parameters and independently construct their references. Neighbor motion is predicted from current and historical observations. Planning proceeds on a common physical time grid, and each vehicle replans after passing its current gate.
