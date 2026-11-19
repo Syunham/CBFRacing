@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "gates_passed": [
+    14,
+    14
+  ],
+  "target_per_agent": 14,
+  "duration": 12.819999999999816,
+  "stop_reason": "completed",
+  "stop_separation_m": null,
+  "min_distance": 0.57189317724826,
+  "controller_p50_ms": 342.2861250019196,
+  "controller_p95_ms": 559.0505775009661,
+  "frontend_seconds": 51.762784399958036,
+  "frontend_queries": 106,
+  "max_speed": 16.679370547923742,
+  "manual_waiting": false,
+  "expert_fallbacks": 0,
+  "physical_latency_simulated": false,
+  "controller_construction_seconds": 1.408853300003102,
+  "planner_construction_seconds": 1.3790036000063992,
+  "deferred_plan_artifact_seconds": 0.2621669000000111
+}

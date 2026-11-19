@@ -1,0 +1,4 @@
+newmtl ProbeOrange
+Kd 1.0 0.25 0.02
+Ka 0.1 0.025 0.002
+d 1.0

@@ -1,0 +1,8 @@
+.venv/
+.conda-pkgs/
+.conda-envs/
+downloads/
+simulator/
+upstream/
+__pycache__/
+logs/
